@@ -1,0 +1,15 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "MultiFocusCamera2D",
+		uint64 ResourceId = 5610d415f73b7f42,
+	},
+	ContentTags = 
+	{
+		Array Tags = 
+		[
+			"2dCameras",
+		],
+	},
+},

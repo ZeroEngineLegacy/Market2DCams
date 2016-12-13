@@ -1,0 +1,44 @@
+//Copyright: © 2016 DigiPen, All Rights Reserved.
+//Author:    Arend Danielek
+
+class CameraFocusTarget : ZilchComponent
+{
+  [Property]
+  var FocusWeight : Real = 1.0;
+  
+  [Property]
+  var AddOnEnterView : Boolean = false;
+  
+  var Added : Boolean = false;
+  
+  function Initialize(init : CogInitializer)
+  {
+    if(!this.AddOnEnterView && !this.Added)
+      this.AddToFocus();
+    else
+      Zero.Connect(this.Owner, Events.EnterView, this.OnEnterView);
+  }
+
+  function OnEnterView(event : GraphicalEvent)
+  {
+    this.AddToFocus();
+  }
+  
+  function AddToFocus()
+  {
+    if(this.Added)
+      return;
+      
+    var focusEvent = CameraFocusEvent();
+    focusEvent.Object = this.Owner;
+    this.Space.DispatchEvent(Events.CameraFocusEvent, focusEvent);
+    this.Added = true;
+  }
+  
+  function Destroyed()
+  {
+    var unfocus = CameraUnfocusEvent();
+    unfocus.Object = this.Owner;
+    this.Space.DispatchEvent(Events.CameraUnfocusEvent, unfocus);
+  }
+}

@@ -1,0 +1,341 @@
+//Copyright: © 2016 DigiPen, All Rights Reserved.
+//Author:    Arend Danielek
+
+class MultiFocusCamera2D : ZilchComponent
+{
+  [Dependency]
+  var Transform : Transform;
+  
+  [Dependency]
+  var Camera : Camera = null;
+  
+  [Dependency]
+  var Orientation : Orientation = null;
+  
+  // Is the component active?
+  [Property]
+  var Active : Boolean = true;
+  
+  // Speed at which the camera object moves
+  [Property]
+  var TrackingSpeed : Real = 5.0;
+  
+  // Should tracking be based of the average position of all objects, or the average position of the 4 axis extrema objects
+  [Property]
+  var DensityBasedTracking : Boolean = false;
+  
+  // Should the weights of the focus objects be used in tracking calculations
+  // Reuires Density Based Tracking to be active
+  [Property]
+  var WeightedTracking : Boolean = true;
+  
+  // Speed at which the camera focus point moves
+  [Property]
+  var FocusSpeed : Real = 10.0;
+  
+  // Should the camera focus on the average position of all objects or the average position of the 4 axis extrema objects
+  // True  = Average all positions
+  // False = Average of extreme positions
+  [Property]
+  var DensityBaseFocusing : Boolean = true;
+  
+  // Should the weights of the focus objects be used in focus calculations
+  // Requires Density Based Focusing to be active
+  [Property]
+  var WeightedFocusing : Boolean = true;
+  
+  // Minimum Z axis depth of the camera
+  [Property]
+  var MinZoom : Real = 1.0;
+  
+  // Maximum Z axis depth of the camera
+  [Property]
+  var MaxZoom : Real = 100.0;
+  
+  // Size of the gap between an axis extrema object and its corresponding edge
+  [Property]
+  var Padding : Real2 = Real2();
+  
+  // Maximum number of object allowed on the focus list
+  [Property]
+  var MaxObjectCount : Integer = 10;
+  
+  // Current focus point for the camera
+  var FocusPos : Real3 = Real3();
+  
+  // List of all object's that should be focused in the camera view
+  var FocusList : Array[Cog] = null;
+  
+  [Property]
+  var DebugPrint : Boolean = false;
+  
+  [Property]
+  var BreakOnError : Boolean = true;
+  
+  
+  sends CameraFocusEvent : CameraFocusEvent;
+  sends CameraUnfocusEvent : CameraUnfocusEvent;
+  
+  function Initialize(init : CogInitializer)
+  {
+    this.FocusPos = this.Owner.Transform.WorldTranslation;
+    this.FocusPos.Z = 0.0;
+    
+    // Construct the focus object and focus object weight list
+    this.FocusList = Array[Cog]();
+    
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    Zero.Connect(this.Space, Events.CameraFocusEvent, this.OnFocusCamera);
+    Zero.Connect(this.Space, Events.CameraUnfocusEvent, this.OnUnfocusCamera);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    // If the component is not active do nothing
+    // If there are no object's to focus on do nothing
+    if(!this.Active || this.FocusList.Count == 0)
+    {
+      return;
+    }
+    
+    // Create variables to keep track of the objects that have the most extreme positive and negative positions on the X & Y axis
+    var topMost : Cog = this.FocusList.Get(0);
+    var botMost : Cog = this.FocusList.Get(0);
+    var leftMost : Cog = this.FocusList.Get(0);
+    var rightMost : Cog = this.FocusList.Get(0);
+    
+    // The average position of every focus object
+    var avePos : Real3 = Real3();
+    // The weighted average position of every focus object
+    var avePosWeighted : Real3 = Real3();
+    
+    // Loop through the focus objects to compare for teh axis extrema and the average positions
+    for(var i : Integer = 0; i < this.FocusList.Count; i += 1)
+    {
+      // Get the object and weight of the current index
+      var obj : Cog = this.FocusList.Get(i);
+      var weight : Real = obj.CameraFocusTarget.FocusWeight;
+      
+      // Cache the object's scale
+      var objScale : Real3 = obj.Transform.WorldScale;
+      
+      // Check to see if the object's Y cord is greater than the topMost object
+      if(obj.Transform.WorldTranslation.Y + (objScale.Y / 2.0) > topMost.Transform.WorldTranslation.Y + (topMost.Transform.WorldScale.Y /2.0))
+      {
+        topMost = obj;
+      }
+      // Check to see if the object's Y cord is less than the botMost object
+      if(obj.Transform.WorldTranslation.Y - (objScale.Y / 2.0) < botMost.Transform.WorldTranslation.Y - (botMost.Transform.WorldScale.Y /2.0))
+      {
+        botMost = obj;
+      }
+      // Check to see if the object's X cord is less than the leftMost object
+      if(obj.Transform.WorldTranslation.X - (objScale.X / 2.0) < leftMost.Transform.WorldTranslation.X - (leftMost.Transform.WorldScale.X /2.0))
+      {
+        leftMost = obj;
+      }
+      // Check to see if the object's X cord is greater than the rightMost object
+      if(obj.Transform.WorldTranslation.X + (objScale.X / 2.0) > rightMost.Transform.WorldTranslation.X + (rightMost.Transform.WorldScale.X /2.0))
+      {
+        rightMost = obj;
+      }
+      
+      // Collect the position of all focus objects
+      avePos += obj.Transform.WorldTranslation;
+      // Collect the weighted position of all focus objects
+      avePosWeighted += obj.Transform.WorldTranslation * weight;
+    }
+    
+    // Finish calculating the average position of all focus objects
+    avePos /= this.FocusList.Count;
+    
+    // Finish calculating the weighted average position of all focus objects
+    avePosWeighted /= this.FocusList.Count;
+    
+    // Use the X cord and scale of the left and right most object's to calculate the minimum width of the view plane in world space for both object to be visible on screen
+    var minWidth = rightMost.Transform.WorldTranslation.X + (rightMost.Transform.WorldScale.X / 2.0) - leftMost.Transform.WorldTranslation.X - (leftMost.Transform.WorldScale.X / 2.0);
+    // Use the Y cord and scale of the top and bot most object's to calculate the minimum height of the view plane in world space for both object to be visible on screen
+    var minHeight = topMost.Transform.WorldTranslation.Y + (topMost.Transform.WorldScale.Y / 2.0) - botMost.Transform.WorldTranslation.Y - (botMost.Transform.WorldScale.Y / 2.0);
+    
+    // Calculate the aspect ratio of the minWidth and minHeight
+    var requiredAR = minWidth/minHeight;
+    // Get the aspect ratio of the viewport
+    var aspectRatio = this.LevelSettings.CameraViewport.ResolutionOrAspect.X / this.LevelSettings.CameraViewport.ResolutionOrAspect.Y;
+    
+    // Add the edge gaps for each edge into the minHeight and minWidth before aspect ratio correction
+    minWidth += this.Padding.X * 2.0;
+    minHeight += this.Padding.Y * 2.0;
+    
+    // Determine if the height or width of the required aspect ratio is bigger
+    if(requiredAR > aspectRatio)
+    {
+      // If the height is bigger that calculate the width to keep the viewport aspect ration
+      minHeight = minWidth * (1.0 / aspectRatio);
+    }
+    else
+    {
+      // If the width is bigger that calculate the height to keep the viewport aspect ration
+      minWidth = minHeight * aspectRatio;
+    }
+    
+    // Calculate the distance from the viewplane the camera should be positioned
+    var zDepth = Math.Cross(Real3(minWidth,0.0,0.0), Real3(0.0,minHeight,0.0));
+    zDepth.Z = Math.Sqrt(zDepth.Z);
+    
+    // Constrain the zDepth to the min and max zoom levels
+    if(zDepth.Z < this.MinZoom)
+    {
+      zDepth.Z = this.MinZoom;
+    }
+    else if(zDepth.Z > this.MaxZoom)
+    {
+      zDepth.Z = this.MaxZoom;
+    }
+    
+    //Calculate the target camera position based of the requested average
+    var targCamPos : Real3 = Real3();
+    if(this.DensityBasedTracking)
+    {
+      // Should weighted tracking be used
+      if(this.WeightedTracking)
+      {
+        targCamPos = avePosWeighted + zDepth;
+      }
+      else
+      {
+        targCamPos = avePos + zDepth;
+      }
+    }
+    else
+    {
+      targCamPos = Real3(leftMost.Transform.Translation.X + (minWidth/2.0), botMost.Transform.Translation.Y + (minHeight/2.0),0.0) + zDepth;
+    }
+    
+    // Should the new target focus position be the average position of all objects or just the axis extrema objects
+    if(this.DensityBaseFocusing)
+    {
+      if(this.WeightedFocusing)
+      {
+        // Interpolate the current focus position towards the weighted average position of all focus objects
+        this.FocusPos = Math.Lerp(this.FocusPos, avePosWeighted, this.FocusSpeed * event.Dt);
+      }
+      else
+      {
+        // Interpolate the current focus position towards the average position of all focus objects
+        this.FocusPos = Math.Lerp(this.FocusPos, avePos, this.FocusSpeed * event.Dt);
+      }
+    }
+    else
+    {
+      // Interpolate the current focus position towards the average position of the axis extrema objects
+      var targFocusPos : Real3 = Real3(leftMost.Transform.Translation.X + (minWidth/2.0), botMost.Transform.Translation.Y + (minHeight/2.0),0.0);
+      this.FocusPos = Math.Lerp(this.FocusPos, targFocusPos, this.FocusSpeed * event.Dt);
+    }
+    
+    
+    
+    // Interpolate the camera towards the new tracking position
+    if(this.Owner.Camera.ProjectionMode == ProjectionMode.Orthographic)
+    {
+      this.Owner.Camera.Size = Math.Lerp(this.Owner.Camera.Size, zDepth.Z, this.TrackingSpeed * event.Dt);
+    }
+    this.Owner.Transform.Translation = Math.Lerp(this.Owner.Transform.Translation, targCamPos, this.TrackingSpeed * event.Dt);
+    
+    // Turn the camera to look at the new focus point
+    this.Owner.Orientation.LookAtPoint(this.FocusPos);
+  }
+  
+  // Handles event request to add an object to the focus list
+  function OnFocusCamera(event : CameraFocusEvent)
+  {
+      this.AddFocusObject(event.Object);
+  }
+  
+  // Handles event request to remove an object to the focus list
+  function OnUnfocusCamera(event : CameraUnfocusEvent)
+  {
+      this.RemoveFocusObject(event.Object);
+  }
+  
+  // Confirms and then add an object to the focus list
+  function AddFocusObject(object : Cog)
+  {
+    // Confirm it is a valid object
+    if(object == null)
+    {
+      if(this.BreakOnError)
+        throw new Exception("Attempting to focus camera on null object");
+      return;
+    }
+    
+    if(this.DebugPrint)
+      Console.WriteLine("Attempting to focus `object`");
+    
+    // confirm the weight is valid (if the weight is zero what is the point of including it in calculations
+    if(object.CameraFocusTarget.FocusWeight == 0.0)
+    {
+      if(this.DebugPrint)
+        Console.WriteLine("Attempting to assign a camera focus object weight a weight of 0.0, causing it to not be considered in tracking for focusing");
+    }
+    
+    var index = this.FocusList.FindFirstIndex(object);
+    
+    // If this object is already being focused
+    if(index != -1)
+    {
+      if(this.DebugPrint)
+        Console.WriteLine("Attempting to add a duplicate object and weight to the focus list");
+      return;
+    }
+    
+    this.FocusList.Add(object);
+    if(this.DebugPrint)
+      Console.WriteLine("Object added to Focus: `object` Weight: `object.CameraFocusTarget.FocusWeight`");
+  }
+  
+  // Confirms and removes the given object from the focus list
+  function RemoveFocusObject(object : Cog)
+  {
+    // Check if the object is valid
+    if(object == null)
+    {
+      if(this.BreakOnError)
+        throw new Exception("Attempting to remove null from camera focus list");
+    }
+    
+    var index = this.FocusList.FindFirstIndex(object);
+    
+    // If the object is in the focus list
+    if(index != -1)
+    {
+      // Remove the object
+      this.FocusList.RemoveAt(index);
+      if(this.DebugPrint)
+        Console.WriteLine("Object removed from Focus: `object`");
+    }
+    else
+    {
+      if(this.BreakOnError)
+        throw new Exception("Attempting to unfocus object that is not focused.");
+    }
+  }
+}
+
+// Used to request and object be added to the focus list with a valid weight
+class CameraFocusEvent : ZilchEvent
+{
+  var Object : Cog = null;
+  var Weight : Real
+  {
+    get
+    {
+      return this.Object.CameraFocusTarget.FocusWeight;
+    }
+  }
+}
+
+// Used to request and object be removed from the focus list
+class CameraUnfocusEvent : ZilchEvent
+{
+    var Object : Cog = null;
+}

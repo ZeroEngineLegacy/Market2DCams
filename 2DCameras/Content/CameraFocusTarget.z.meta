@@ -1,0 +1,15 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "CameraFocusTarget",
+		uint64 ResourceId = 5610d6592e4d4bcb,
+	},
+	ContentTags = 
+	{
+		Array Tags = 
+		[
+			"2dCameras",
+		],
+	},
+},
