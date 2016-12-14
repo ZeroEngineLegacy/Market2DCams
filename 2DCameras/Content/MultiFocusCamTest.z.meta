@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "MultiFocusCamTest",
+		uint64 ResourceId = 5806825214153563,
+	},
+},

@@ -1,0 +1,10 @@
+class TopDownCellCamera : ZilchComponent
+{
+    [Property]
+    var CellSize : Real2 = Real2(10, 10);
+    
+    
+    function Initialize(init : CogInitializer)
+    {
+    }
+}
