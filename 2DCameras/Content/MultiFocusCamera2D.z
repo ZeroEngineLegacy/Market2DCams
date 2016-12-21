@@ -216,7 +216,9 @@ class MultiFocusCamera2D : ZilchComponent
         }
         else
         {
-            targCamPos = Real3(leftMost.Transform.Translation.X + (minWidth/2.0), botMost.Transform.Translation.Y + (minHeight/2.0),0.0) + zDepth;
+            targCamPos = Real3(leftMost.Transform.Translation.X + ((rightMost.Transform.Translation.X - leftMost.Transform.Translation.X)/2.0),
+                               botMost.Transform.Translation.Y + ((topMost.Transform.Translation.Y - botMost.Transform.Translation.Y)/2.0), 
+                               0.0) + zDepth;
         }
         
         // Should the new target focus position be the average position of all objects or just the axis extrema objects
@@ -236,7 +238,9 @@ class MultiFocusCamera2D : ZilchComponent
         else
         {
             // Interpolate the current focus position towards the average position of the axis extrema objects
-            var targFocusPos : Real3 = Real3(leftMost.Transform.Translation.X + (minWidth/2.0), botMost.Transform.Translation.Y + (minHeight/2.0),0.0);
+            var targFocusPos : Real3 = Real3(leftMost.Transform.Translation.X + ((rightMost.Transform.Translation.X - leftMost.Transform.Translation.X)/2.0),
+                               botMost.Transform.Translation.Y + ((topMost.Transform.Translation.Y - botMost.Transform.Translation.Y)/2.0), 
+                               0.0);
             this.FocusPos = Math.Lerp(this.FocusPos, targFocusPos, this.FocusSpeed * event.Dt);
         }
         
