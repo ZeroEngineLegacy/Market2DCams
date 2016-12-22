@@ -1,5 +1,8 @@
 class InputCycledMovement : ZilchComponent
 {
+    sends EnablePlayerInput : ZilchEvent;
+    sends DisablePlayerInput : ZilchEvent;
+    
     [Property]
     var InputID : Integer = 0;
     
@@ -7,6 +10,9 @@ class InputCycledMovement : ZilchComponent
     var Speed : Real = 5.0;
     
     var ActiveID : Integer = 0;
+    
+    var Enabled : Boolean = true;
+    
     function Initialize(init : CogInitializer)
     {
         Zero.Connect(this.Space, Events.LogicUpdate, this.OnUpdate);
@@ -14,6 +20,9 @@ class InputCycledMovement : ZilchComponent
 
     function OnUpdate(event : UpdateEvent)
     {
+        if(!this.Enabled)
+            return;
+        
         if(Zero.Keyboard.KeyIsPressed(Keys.Enter))
         {
             if(this.ActiveID == 3)
