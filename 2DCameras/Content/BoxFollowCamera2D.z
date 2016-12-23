@@ -1,0 +1,93 @@
+/************************************************************************************************************/
+/* Copyright 2016 DigiPen, All Rights Reserved                                                              */
+/* Class: Box2DConstraintCamera                                                                             */
+/* Brief: The camera logic component implements a simple 2D follow camera that uses a box constraint. The   */
+/* box constraint is centered on the camera object's position and projected onto the XY-Plane of the        */
+/* target object's Z position. When the target object reaches the edge of the box constraint the camera     */
+/* will interpolate in order to keep the target object within the constraints of the box.                   */
+/*                                                                                                          */
+/* Author: Arend Danielek                                                                                   */
+/* Last Update: 12/23/2016                                                                                  */
+/* Last Updated By: Arend Danielek                                                                          */
+/************************************************************************************************************/
+
+class Box2DConstraintCamera : ZilchComponent
+{
+    [Dependency]
+    var Transform : Transform;
+    
+    [Dependency]
+    var Camera : Camera;
+    
+    // The object to be tracked
+    [Property]
+    var TargetCogPath : CogPath = null;
+    var Target : Cog { get { return this.TargetCogPath.Cog; } }
+    var TargetPos : Real3 { get { return this.Target.Transform.WorldTranslation; } }
+    
+    // Scale of the bounding box
+    [Property]
+    var BoxScale : Real2 = Real2(10.0,10.0);
+    var BoxExtents : Real2 { get { return this.BoxScale / 2.0; } }
+    
+    //The camera position in WorldSpace
+    var CamPos : Real3
+    {
+        get { return this.Transform.WorldTranslation; }
+        set { this.Transform.WorldTranslation = value; }
+    }
+    
+    //Camera position projected onto the Z=Plane of the target object
+    var ProjectedCamPos : Real3
+    {
+        get 
+        {
+            var camPos = this.CamPos;
+            camPos.Z = this.TargetPos.Z;
+            return camPos;
+        }
+        set
+        {
+            var camPos = value;
+            camPos.Z = this.CamPos.Z;
+            this.CamPos = camPos;
+        }
+    }
+    
+    function Initialize(init : CogInitializer)
+    {
+        // Confirm the target exists
+        if(this.Target == null)
+            throw new Exception("Camera has no target.");
+        
+        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    }
+
+    function OnLogicUpdate(event : UpdateEvent)
+    {
+        var movement = Real3();
+        //Target is past left box edge
+        if(this.TargetPos.X < this.ProjectedCamPos.X - this.BoxExtents.X)
+            //Calculate the amount the target has gone over the left edge
+            movement.X = this.TargetPos.X - (this.ProjectedCamPos.X - this.BoxExtents.X);
+        
+        //Target is past right box edge
+        else if(this.TargetPos.X > this.ProjectedCamPos.X + this.BoxExtents.X)
+            //Calculate the amount the target has gone over the right edge
+            movement.X = this.TargetPos.X - (this.ProjectedCamPos.X + this.BoxExtents.X);
+        
+        
+        //Target is past bottom box edge
+        if(this.TargetPos.Y < this.ProjectedCamPos.Y - this.BoxExtents.Y)
+            //Calculate the amount the target has gone over the bottom edge
+            movement.Y = this.TargetPos.Y - (this.ProjectedCamPos.Y - this.BoxExtents.Y);
+        
+        //Target is past top box edge
+        else if(this.TargetPos.Y > this.ProjectedCamPos.Y + this.BoxExtents.Y)
+            //Calculate the amount the target has gone over the top edge
+            movement.Y = this.TargetPos.Y - (this.ProjectedCamPos.Y + this.BoxExtents.Y);
+        
+        //Move the camera
+        this.ProjectedCamPos += movement;
+    }
+}

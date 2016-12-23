@@ -1,0 +1,8 @@
+TextContent = 
+{
+	ZilchScriptBuilder = 
+	{
+		string Name = "BoxFollowCamera2D",
+		uint64 ResourceId = 580bb74ae32670c4,
+	},
+},

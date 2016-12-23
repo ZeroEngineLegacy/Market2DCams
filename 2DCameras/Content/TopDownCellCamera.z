@@ -1,3 +1,15 @@
+/************************************************************************************************************/
+/* Copyright 2016 DigiPen, All Rights Reserved                                                              */
+/* Class: TopDownCellCamera                                                                                 */
+/* Brief: Implements a 2D camera which splits the environment into "cells" that are the size of the camera  */
+/* frustrum projection on the 0 Z-Plane. When the player sprite (assumed to be square) reaches the edge of  */
+/* viewport, the camera object will interpolate over the crossed edge centering on the next "cell".         */
+/*                                                                                                          */
+/* Author: Arend Danielek                                                                                   */
+/* Last Update: 12/23/2016                                                                                  */
+/* Last Updated By: Arend Danielek                                                                          */
+/************************************************************************************************************/
+
 class TopDownCellCamera : ZilchComponent
 {
     [Dependency]
@@ -9,7 +21,7 @@ class TopDownCellCamera : ZilchComponent
     [Dependency]
     var CameraViewport : CameraViewport;
     
-    //WorldSpace size of the viewport
+    //WorldSpace size of the viewport, used to determine when the player crosses the edge of the screen.
     var CellSize : Real2
     {
         get
@@ -30,7 +42,7 @@ class TopDownCellCamera : ZilchComponent
     var PlayerCogPath : CogPath;
     var Player : Cog { get { return this.PlayerCogPath.Cog; } }
     
-    //Helper members for player transform properties
+    //Helpers for player transform properties
     var PlayerPos : Real3 { get { return this.Player.Transform.Translation; } }
     var PlayerScale : Real3 { get { return this.Player.Transform.Scale; } }
     var PlayerHalfXScale : Real { get { return this.PlayerScale.X / 2.0; } }
@@ -138,9 +150,12 @@ class TopDownCellCamera : ZilchComponent
         this.DisablePlayerInput();
         
         var seq = Actions.Sequence(this.Owner.Actions);
+        //Move the player and camera in sync
         var grp = Actions.Group(seq);
         Actions.Property(grp, @this.Transform.Translation, targCamPos, this.ShiftDuration, Ease.Linear);
         Actions.Property(grp, @this.Player.Transform.Translation, targPlayerPos, this.ShiftDuration, Ease.Linear);
+        
+        //After moving the camera and player re-enable player input.
         Actions.Call(seq, this.EnablePlayerInput);
     }
     
