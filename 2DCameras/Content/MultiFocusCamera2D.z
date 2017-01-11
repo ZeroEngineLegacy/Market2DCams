@@ -156,10 +156,10 @@ class MultiFocusCamera2D : ZilchComponent
             avePosWeighted += obj.Transform.WorldTranslation * weight;
         }
         
-        Console.WriteLine("TopMost: `topMost`");
-        Console.WriteLine("botMost: `botMost`");
-        Console.WriteLine("leftMost: `leftMost`");
-        Console.WriteLine("rightMost: `rightMost`");
+        this.DebugOutput("TopMost: `topMost`");
+        this.DebugOutput("botMost: `botMost`");
+        this.DebugOutput("leftMost: `leftMost`");
+        this.DebugOutput("rightMost: `rightMost`");
         
         // Finish calculating the average position of all focus objects
         avePos /= this.FocusList.Count;
@@ -170,25 +170,47 @@ class MultiFocusCamera2D : ZilchComponent
         
         // Use the X cord and scale of the left and right most object's to calculate the minimum width of the view plane in world space for both object to be visible on screen
         var minWidth = rightMost.Transform.WorldTranslation.X + (rightMost.Transform.WorldScale.X / 2.0) - leftMost.Transform.WorldTranslation.X - (leftMost.Transform.WorldScale.X / 2.0);
-        Console.WriteLine("MinWidth: `minWidth`");
+        this.DebugOutput("MinWidth: `minWidth`");
         
         // Use the Y cord and scale of the top and bot most object's to calculate the minimum height of the view plane in world space for both object to be visible on screen
         var minHeight = topMost.Transform.WorldTranslation.Y + (topMost.Transform.WorldScale.Y / 2.0) - botMost.Transform.WorldTranslation.Y - (botMost.Transform.WorldScale.Y / 2.0);
-        Console.WriteLine("minHeight: `minHeight`");
+        this.DebugOutput("minHeight: `minHeight`");
         
         // Get the aspect ratio of the viewport
-        var aspectRatio = this.CameraViewport.ViewportResolutionWithMargin.X / this.CameraViewport.ViewportResolutionWithMargin.Y;
+        var viewportRes = this.CameraViewport.ViewportResolutionWithMargin;
+        var aspectRatio : Real = 0.0;
         
-        var minAspect = minWidth / minHeight;
+        if (viewportRes.Y == 0.0)
+        {
+          aspectRatio = 1.0;
+        }
+        else
+        {
+          aspectRatio = viewportRes.X / viewportRes.Y;
+        }
+        
+        this.DebugOutput("viewportWidth: `viewportRes.X`");
+        this.DebugOutput("viewportHeight: `viewportRes.Y`");
+        
         // Add the edge gaps for each edge into the minHeight and minWidth before aspect ratio correction
         minWidth += this.ScreenPadding.X * 2.0;
         minHeight += this.ScreenPadding.Y * 2.0;
         
+        var minAspect : Real = 0;
+        
+        if (minHeight == 0.0)
+        {
+          minAspect = 1.0;
+        }
+        else
+        {
+          minAspect = minWidth / minHeight;
+        }
         
         // Determine if the height or width of the required aspect ratio is bigger
-        if(minAspect > aspectRatio)
+        if (minAspect > aspectRatio)
         {
-            // If the height is bigger that calculate the width to keep the viewport aspect ration
+            // If the height is bigger then calculate the width to keep the viewport aspect ration
             minHeight = minWidth * (1.0 / aspectRatio);
         }
         else
@@ -206,7 +228,7 @@ class MultiFocusCamera2D : ZilchComponent
         
         //Calculate the target camera position based of the requested average
         var targCamPos : Real3 = Real3();
-        if(!this.ExtremaBasedTracking)
+        if (!this.ExtremaBasedTracking)
         {
             // Should weighted tracking be used
             if(this.WeightedTracking)
@@ -244,8 +266,6 @@ class MultiFocusCamera2D : ZilchComponent
             this.FocusPos = Math.Lerp(this.FocusPos, targFocusPos, this.FocusSpeed * event.Dt);
         }
         
-        
-        
         // Interpolate the camera towards the new tracking position
         if(this.Owner.Camera.PerspectiveMode == PerspectiveMode.Orthographic)
         {
@@ -282,14 +302,12 @@ class MultiFocusCamera2D : ZilchComponent
             return;
         }
         
-        if(this.DebugPrint)
-            Console.WriteLine("Attempting to focus `object`");
+        this.DebugOutput("Attempting to focus `object`");
         
         // confirm the weight is valid (if the weight is zero what is the point of including it in calculations
         if(object.CameraFocusTarget.FocusWeight == 0.0)
         {
-            if(this.DebugPrint)
-                Console.WriteLine("Attempting to assign a camera focus object weight a weight of 0.0, causing it to not be considered in tracking for focusing");
+            this.DebugOutput("Attempting to assign a camera focus object weight a weight of 0.0, causing it to not be considered in tracking for focusing");
         }
         
         var index = this.FocusList.FindFirstIndex(object);
@@ -297,8 +315,7 @@ class MultiFocusCamera2D : ZilchComponent
         // If this object is already being focused
         if(index != -1)
         {
-            if(this.DebugPrint)
-                Console.WriteLine("Attempting to add a duplicate object and weight to the focus list");
+            this.DebugOutput("Attempting to add a duplicate object and weight to the focus list");
             
             return;
         }
@@ -306,8 +323,7 @@ class MultiFocusCamera2D : ZilchComponent
         this.FocusList.Add(object);
         this.TotalWeight += object.CameraFocusTarget.FocusWeight;
         
-        if(this.DebugPrint)
-            Console.WriteLine("Object added to Focus: `object` Weight: `object.CameraFocusTarget.FocusWeight`");
+        this.DebugOutput("Object added to Focus: `object` Weight: `object.CameraFocusTarget.FocusWeight`");
     }
     
     // Confirms and removes the given object from the focus list
@@ -330,15 +346,19 @@ class MultiFocusCamera2D : ZilchComponent
             
             this.TotalWeight -= object.CameraFocusTarget.FocusWeight;
         
-        
-            if(this.DebugPrint)
-                Console.WriteLine("Object removed from Focus: `object`");
+            this.DebugOutput("Object removed from Focus: `object`");
         }
         else
         {
             if(this.BreakOnError)
                 throw new Exception("Attempting to unfocus object that is not focused.");
         }
+    }
+    
+    function DebugOutput(str : String)
+    {
+      if (this.DebugPrint)
+        Console.WriteLine(str);
     }
 }
 
