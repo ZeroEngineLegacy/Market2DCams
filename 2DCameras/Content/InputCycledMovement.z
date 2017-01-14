@@ -1,8 +1,5 @@
 class InputCycledMovement : ZilchComponent
 {
-    sends EnablePlayerInput : ZilchEvent;
-    sends DisablePlayerInput : ZilchEvent;
-    
     [Property]
     var InputID : Integer = 0;
     
@@ -16,6 +13,8 @@ class InputCycledMovement : ZilchComponent
     function Initialize(init : CogInitializer)
     {
         Zero.Connect(this.Space, Events.LogicUpdate, this.OnUpdate);
+        Zero.Connect(this.Owner, Events.EnablePlayerInput, this.EnableInput);
+        Zero.Connect(this.Owner, Events.DisablePlayerInput, this.DisableInput);
     }
 
     function OnUpdate(event : UpdateEvent)
@@ -58,5 +57,15 @@ class InputCycledMovement : ZilchComponent
             movement.Y = -1.0;
         }
         this.Owner.Transform.Translation += movement * this.Speed * event.Dt;
+    }
+    
+    function EnableInput(event : ZilchEvent)
+    {
+        this.Enabled = true;
+    }
+    
+    function DisableInput(event : ZilchEvent)
+    {
+        this.Enabled = false;
     }
 }

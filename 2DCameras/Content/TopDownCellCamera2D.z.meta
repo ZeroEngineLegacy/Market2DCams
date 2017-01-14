@@ -3,8 +3,8 @@ TextContent
 {
 	ZilchScriptBuilder 
 	{
-		var Name = "MultiFocusCamera2D"
-		var ResourceId = 0x5610d415f73b7f42
+		var Name = "TopDownCellCamera2D"
+		var ResourceId = 0x5806b0ad1263735c
 	}
 	ContentTags 
 	{

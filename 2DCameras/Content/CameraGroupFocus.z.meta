@@ -1,15 +1,15 @@
-TextContent = 
+[Version:1]
+TextContent 
 {
-	ZilchScriptBuilder = 
+	ZilchScriptBuilder 
 	{
-		string Name = "CameraGroupFocus",
-		uint64 ResourceId = 530641b538d1947f,
-	},
-	ContentTags = 
+		var Name = "CameraGroupFocus"
+		var ResourceId = 0x530641b538d1947f
+	}
+	ContentTags 
 	{
-		Array Tags = 
-		[
-			"2dCameras",
-		],
-	},
-},
+		var Tags = Array
+		{
+		}
+	}
+}

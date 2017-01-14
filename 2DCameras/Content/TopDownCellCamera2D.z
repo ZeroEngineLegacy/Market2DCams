@@ -10,8 +10,11 @@
 /* Last Updated By: Arend Danielek                                                                          */
 /************************************************************************************************************/
 
-class TopDownCellCamera : ZilchComponent
+class TopDownCellCamera2D : ZilchComponent
 {
+    sends EnablePlayerInput : ZilchEvent;
+    sends DisablePlayerInput : ZilchEvent;
+  
     [Dependency]
     var Transform : Transform;
     
@@ -21,18 +24,6 @@ class TopDownCellCamera : ZilchComponent
     [Dependency]
     var CameraViewport : CameraViewport;
     
-    //WorldSpace size of the viewport, used to determine when the player crosses the edge of the screen.
-    var CellSize : Real2
-    {
-        get
-        {
-            var tLeft = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(Real2(0,0)), 0);
-            var bRight = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0);
-            
-            return Real2(bRight.X - tLeft.X, tLeft.Y - bRight.Y);
-        }
-    }
-    
     //Duration to shift the camera from one cell to the next
     [Property]
     var ShiftDuration : Real = 1.0;
@@ -40,6 +31,27 @@ class TopDownCellCamera : ZilchComponent
     //CogPath to the player object
     [Property]
     var PlayerCogPath : CogPath;
+    
+    //Should this component write debug output to the console
+    [Property]
+    var PrintDebug : Boolean = true;
+    
+    //WorldSpace size of the viewport, used to determine when the player crosses the edge of the screen.
+    var CellSize : Real2
+    {
+        get
+        {
+            var tLeft = this.CameraViewport.ScreenToWorldZPlane(
+                this.CameraViewport.ViewportToScreen(Real2(0,0)), 0
+            );
+            var bRight = this.CameraViewport.ScreenToWorldZPlane(
+                this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0
+            );
+            
+            return Real2(bRight.X - tLeft.X, tLeft.Y - bRight.Y);
+        }
+    }
+    
     var Player : Cog { get { return this.PlayerCogPath.Cog; } }
     
     //Helpers for player transform properties
@@ -50,10 +62,6 @@ class TopDownCellCamera : ZilchComponent
     
     //Epsilon used to prevent state flip-flopping
     var Epsilon : Real = 0.01;
-    
-    //Should this component write debug output to the console
-    [Property]
-    var PrintDebug : Boolean = true;
     
     function Initialize(init : CogInitializer)
     {
@@ -111,7 +119,10 @@ class TopDownCellCamera : ZilchComponent
             Console.WriteLine("ShiftRight");
         
         //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
-        var rightEdge = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0.0);
+        var rightEdge = this.CameraViewport.ScreenToWorldZPlane(
+            this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0.0
+        );
+        
         var targCamPos = this.Transform.Translation + Real3(this.CellSize.X, 0.0, 0.0);
         var targPlayerPos = Real3(rightEdge.X + this.PlayerHalfXScale + this.Epsilon, this.PlayerPos.Y, 0.0);
         
@@ -137,7 +148,10 @@ class TopDownCellCamera : ZilchComponent
             Console.WriteLine("ShiftDown");
         
         //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
-        var botEdge = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0.0);
+        var botEdge = this.CameraViewport.ScreenToWorldZPlane(
+            this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0.0
+        );
+        
         var targCamPos = this.Transform.Translation - Real3(0.0, this.CellSize.Y, 0.0);
         var targPlayerPos = Real3(this.PlayerPos.X, botEdge.Y - this.PlayerHalfYScale - this.Epsilon, 0.0);
         
@@ -161,12 +175,11 @@ class TopDownCellCamera : ZilchComponent
     
     function EnablePlayerInput()
     {
-        this.Owner.DispatchEvent(Events.EnablePlayerInput, ZilchEvent());
+        this.Player.DispatchEvent(Events.EnablePlayerInput, ZilchEvent());
     }
     
     function DisablePlayerInput()
     {
-        
-        this.Owner.DispatchEvent(Events.DisablePlayerInput, ZilchEvent());
+        this.Player.DispatchEvent(Events.DisablePlayerInput, ZilchEvent());
     }
 }

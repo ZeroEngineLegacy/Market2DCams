@@ -1,8 +1,0 @@
-TextContent = 
-{
-	ZilchScriptBuilder = 
-	{
-		string Name = "TopDownCellCamera",
-		uint64 ResourceId = 5806b0ad1263735c,
-	},
-},

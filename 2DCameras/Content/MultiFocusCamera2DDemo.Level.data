@@ -37,6 +37,11 @@ Level
 			var HilightInterval = 10
 			var FollowEditorCamera = false
 		}
+		UISpaceCreator 
+		{
+			var UILevel = "581b0646f09fe3e3:MovementInstructions"
+			var UISpace = "576f215c0825de61:Space"
+		}
 	}
 	Cog 
 	{
@@ -44,7 +49,7 @@ Level
 		var LinkId = 2
 		Transform 
 		{
-			var Translation = Vec3{-6.74624443, 37.9342422, 121.042534}
+			var Translation = Vec3{-6.76543999, 40.5612564, 120.58445}
 			var Scale = Vec3{1, 1, 1}
 			var Rotation = Quat{-0.0862674192, 0.0208639279, 0.00180701108, 0.996051848}
 		}
@@ -55,7 +60,7 @@ Level
 			var FarPlane = 500
 			var PerspectiveMode = PerspectiveMode.Orthographic
 			var FieldOfView = 45
-			var Size = 20
+			var Size = 73.3858795
 		}
 		CameraViewport 
 		{
@@ -111,7 +116,7 @@ Level
 			var LookDistance = 122.980057
 			var VerticalAngle = 0.172787562
 			var HorizontalAngle = -0.0418871455
-			var LookTarget = Vec3{-11.8193378, 16.7903957, -5.16638636e-07}
+			var LookTarget = Vec3{-11.8385334, 19.4174118, -0.45808506}
 			var MoveSensitivity = 1
 		}
 	}
@@ -236,7 +241,7 @@ Level
 			var InputID = 0
 			var Speed = 5
 		}
-		CameraFocusTarget 
+		MultiFocusCamera2DTarget 
 		{
 			var FocusWeight = 1
 			var AddOnEnterView = false
@@ -272,7 +277,7 @@ Level
 			var InputID = 2
 			var Speed = 5
 		}
-		CameraFocusTarget 
+		MultiFocusCamera2DTarget 
 		{
 			var FocusWeight = 1
 			var AddOnEnterView = false
@@ -308,7 +313,7 @@ Level
 			var InputID = 3
 			var Speed = 5
 		}
-		CameraFocusTarget 
+		MultiFocusCamera2DTarget 
 		{
 			var FocusWeight = 1
 			var AddOnEnterView = false
@@ -344,7 +349,7 @@ Level
 			var InputID = 1
 			var Speed = 5
 		}
-		CameraFocusTarget 
+		MultiFocusCamera2DTarget 
 		{
 			var FocusWeight = 1
 			var AddOnEnterView = false

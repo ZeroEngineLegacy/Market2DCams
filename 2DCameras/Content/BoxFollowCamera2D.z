@@ -1,6 +1,6 @@
 /************************************************************************************************************/
 /* Copyright 2016 DigiPen, All Rights Reserved                                                              */
-/* Class: Box2DConstraintCamera                                                                             */
+/* Class: BoxFollowCamera2D                                                                                 */
 /* Brief: The camera logic component implements a simple 2D follow camera that uses a box constraint. The   */
 /* box constraint is centered on the camera object's position and projected onto the XY-Plane of the        */
 /* target object's Z position. When the target object reaches the edge of the box constraint the camera     */
@@ -11,7 +11,7 @@
 /* Last Updated By: Arend Danielek                                                                          */
 /************************************************************************************************************/
 
-class Box2DConstraintCamera : ZilchComponent
+class BoxFollowCamera2D : ZilchComponent
 {
     [Dependency]
     var Transform : Transform;
@@ -19,16 +19,28 @@ class Box2DConstraintCamera : ZilchComponent
     [Dependency]
     var Camera : Camera;
     
-    // The object to be tracked
+    //The object to be tracked
     [Property]
     var TargetCogPath : CogPath = null;
-    var Target : Cog { get { return this.TargetCogPath.Cog; } }
-    var TargetPos : Real3 { get { return this.Target.Transform.WorldTranslation; } }
     
-    // Scale of the bounding box
+    //Scale of the bounding box
     [Property]
     var BoxScale : Real2 = Real2(10.0,10.0);
-    var BoxExtents : Real2 { get { return this.BoxScale / 2.0; } }
+    
+    var Target : Cog
+    {
+        get { return this.TargetCogPath.Cog; }
+    }
+    
+    var TargetPos : Real3
+    {
+        get { return this.Target.Transform.WorldTranslation; }
+    }
+    
+    var BoxExtents : Real2
+    {
+        get { return this.BoxScale / 2.0; }
+    }
     
     //The camera position in WorldSpace
     var CamPos : Real3

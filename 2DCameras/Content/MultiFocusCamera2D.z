@@ -1,11 +1,18 @@
-/********************************************************/
-/* Copyright 2016 DigiPen, All Rights Reserved          */
-/* Last Update: 12/13/2016                              */
-/********************************************************/
-
+/************************************************************************************************************/
+/* Copyright 2016 DigiPen, All Rights Reserved                                                              */
+/* Class: MultiFocusCamera2D                                                                                */
+/* Brief: Implements a 2D camera that focuses on a group of "MultiFocusCamera2DTarget" objects.             */
+/*                                                                                                          */
+/* Author: Arend Danielek                                                                                   */
+/* Last Update: 12/23/2016                                                                                  */
+/* Last Updated By: Arend Danielek                                                                          */
+/************************************************************************************************************/
 
 class MultiFocusCamera2D : ZilchComponent
 {
+    sends CameraFocusEvent : CameraFocusEvent;
+    sends CameraUnfocusEvent : CameraUnfocusEvent;
+    
     [Dependency]
     var Transform : Transform;
     
@@ -66,15 +73,6 @@ class MultiFocusCamera2D : ZilchComponent
     [Property]
     var MaxObjectCount : Integer = 10;
     
-    // Current focus point for the camera
-    var FocusPos : Real3 = Real3();
-    
-    // List of all object's that should be focused in the camera view
-    var FocusList : Array[Cog] = null;
-    
-    //Sum of weights of all focused objects
-    var TotalWeight : Real = 0;
-    
     // Turns console debug output on/off
     [Property]
     var DebugPrint : Boolean = false;
@@ -83,8 +81,14 @@ class MultiFocusCamera2D : ZilchComponent
     [Property]
     var BreakOnError : Boolean = true;
     
-    sends CameraFocusEvent : CameraFocusEvent;
-    sends CameraUnfocusEvent : CameraUnfocusEvent;
+    // Current focus point for the camera
+    var FocusPos : Real3 = Real3();
+    
+    // List of all object's that should be focused in the camera view
+    var FocusList : Array[Cog] = null;
+    
+    //Sum of weights of all focused objects
+    var TotalWeight : Real = 0;
     
     function Initialize(init : CogInitializer)
     {
@@ -123,7 +127,7 @@ class MultiFocusCamera2D : ZilchComponent
         {
             // Get the object and weight of the current index
             var obj : Cog = this.FocusList.Get(i);
-            var weight : Real = obj.CameraFocusTarget.FocusWeight;
+            var weight : Real = obj.MultiFocusCamera2DTarget.FocusWeight;
             
             // Cache the object's scale
             var objPos : Real3 = obj.Transform.WorldTranslation;
@@ -305,7 +309,7 @@ class MultiFocusCamera2D : ZilchComponent
         this.DebugOutput("Attempting to focus `object`");
         
         // confirm the weight is valid (if the weight is zero what is the point of including it in calculations
-        if(object.CameraFocusTarget.FocusWeight == 0.0)
+        if(object.MultiFocusCamera2DTarget.FocusWeight == 0.0)
         {
             this.DebugOutput("Attempting to assign a camera focus object weight a weight of 0.0, causing it to not be considered in tracking for focusing");
         }
@@ -321,9 +325,9 @@ class MultiFocusCamera2D : ZilchComponent
         }
         
         this.FocusList.Add(object);
-        this.TotalWeight += object.CameraFocusTarget.FocusWeight;
+        this.TotalWeight += object.MultiFocusCamera2DTarget.FocusWeight;
         
-        this.DebugOutput("Object added to Focus: `object` Weight: `object.CameraFocusTarget.FocusWeight`");
+        this.DebugOutput("Object added to Focus: `object` Weight: `object.MultiFocusCamera2DTarget.FocusWeight`");
     }
     
     // Confirms and removes the given object from the focus list
@@ -344,7 +348,7 @@ class MultiFocusCamera2D : ZilchComponent
             // Remove the object
             this.FocusList.RemoveAt(index);
             
-            this.TotalWeight -= object.CameraFocusTarget.FocusWeight;
+            this.TotalWeight -= object.MultiFocusCamera2DTarget.FocusWeight;
         
             this.DebugOutput("Object removed from Focus: `object`");
         }
@@ -370,7 +374,7 @@ class CameraFocusEvent : ZilchEvent
     {
         get
         {
-            return this.Object.CameraFocusTarget.FocusWeight;
+            return this.Object.MultiFocusCamera2DTarget.FocusWeight;
         }
     }
 }

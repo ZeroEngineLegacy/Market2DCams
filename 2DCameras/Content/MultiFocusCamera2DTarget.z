@@ -4,7 +4,7 @@
 /********************************************************/
 
 
-class CameraFocusTarget : ZilchComponent
+class MultiFocusCamera2DTarget : ZilchComponent
 {
   [Property]
   var FocusWeight : Real = 1.0;
