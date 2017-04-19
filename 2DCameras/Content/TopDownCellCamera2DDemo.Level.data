@@ -16,8 +16,8 @@ Level
 			var AlwaysDrawInEditor = true
 			var DrawInGame = true
 			var GridColor = Real4{0.5, 0.5, 0.5, 0.400000006}
-			var GridHiLight = Real4{0, 0, 0, 0.400000006}
-			var HilightInterval = 10
+			var GridHighlight = Real4{0, 0, 0, 0.400000006}
+			var HighlightInterval = 10
 			var FollowEditorCamera = false
 		}
 		UISpaceCreator 
@@ -81,7 +81,6 @@ Level
 		}
 		Camera 
 		{
-			var Facing = Facing.NegativeZ
 			var NearPlane = 0.5
 			var FarPlane = 500
 			var PerspectiveMode = PerspectiveMode.Perspective
@@ -158,7 +157,6 @@ Level
 		}
 		Camera 
 		{
-			var Facing = Facing.NegativeZ
 			var NearPlane = 0.5
 			var FarPlane = 100
 			var PerspectiveMode = PerspectiveMode.Orthographic

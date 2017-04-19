@@ -46,7 +46,7 @@ Level
 		{
 			var Translation = Real3{0, 10.1824169, 49.240387}
 			var Scale = Real3{1, 1, 1}
-			var Rotation = Quaternionernion{-0.0871557519, -1.09695906e-08, -1.90484961e-09, 0.99619478}
+			var Rotation = Quaternion{-0.0871557519, -1.09695906e-08, -1.90484961e-09, 0.99619478}
 		}
 		CameraViewport 
 		{
@@ -117,7 +117,7 @@ Level
 		{
 			var Translation = Real3{0, 0, 50}
 			var Scale = Real3{1, 1, 1}
-			var Rotation = Quaternionernion{0, 0, 0, 1}
+			var Rotation = Quaternion{0, 0, 0, 1}
 		}
 		CameraViewport 
 		{
@@ -183,7 +183,7 @@ Level
 		{
 			var Translation = Real3{-16.9751186, -9.34002113, 0}
 			var Scale = Real3{2, 2, 2}
-			var Rotation = Quaternionernion{0, 0, 0, 1}
+			var Rotation = Quaternion{0, 0, 0, 1}
 		}
 		Hierarchy 
 		{
@@ -195,7 +195,7 @@ Level
 				{
 					var Translation = Real3{0, 0, 0}
 					var Scale = Real3{1, 1, 1}
-					var Rotation = Quaternionernion{0, 0, 0, 1}
+					var Rotation = Quaternion{0, 0, 0, 1}
 				}
 				SpriteText 
 				{
