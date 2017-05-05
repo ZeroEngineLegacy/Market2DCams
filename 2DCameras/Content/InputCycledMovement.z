@@ -1,71 +1,71 @@
 class InputCycledMovement : ZilchComponent
 {
-    [Property]
-    var InputID : Integer = 0;
-    
-    [Property]
-    var Speed : Real = 5.0;
-    
-    var ActiveID : Integer = 0;
-    
-    var Enabled : Boolean = true;
-    
-    function Initialize(init : CogInitializer)
-    {
-        Zero.Connect(this.Space, Events.LogicUpdate, this.OnUpdate);
-        Zero.Connect(this.Owner, Events.EnablePlayerInput, this.EnableInput);
-        Zero.Connect(this.Owner, Events.DisablePlayerInput, this.DisableInput);
-    }
+  [Property]
+  var InputID : Integer = 0;
+  
+  [Property]
+  var Speed : Real = 5.0;
+  
+  var ActiveID : Integer = 0;
+  
+  var Enabled : Boolean = true;
+  
+  function Initialize(init : CogInitializer)
+  {
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnUpdate);
+    Zero.Connect(this.Owner, Events.EnablePlayerInput, this.EnableInput);
+    Zero.Connect(this.Owner, Events.DisablePlayerInput, this.DisableInput);
+  }
 
-    function OnUpdate(event : UpdateEvent)
+  function OnUpdate(event : UpdateEvent)
+  {
+    if(!this.Enabled)
+      return;
+    
+    if(Zero.Keyboard.KeyIsPressed(Keys.Enter))
     {
-        if(!this.Enabled)
-            return;
-        
-        if(Zero.Keyboard.KeyIsPressed(Keys.Enter))
-        {
-            if(this.ActiveID == 3)
-            {
-                this.ActiveID = 0;
-            }
-            else
-            {
-                this.ActiveID += 1;
-            }
-        }
-        
-        if(this.ActiveID != this.InputID)
-        {
-            return;
-        }
-        
-        var movement : Real3 = Real3();
-        if(Zero.Keyboard.KeyIsDown(Keys.Up))
-        {
-            movement.Y = 1.0;
-        }
-        if(Zero.Keyboard.KeyIsDown(Keys.Right))
-        {
-            movement.X = 1.0;
-        }
-        if(Zero.Keyboard.KeyIsDown(Keys.Left))
-        {
-            movement.X = -1.0;
-        }
-        if(Zero.Keyboard.KeyIsDown(Keys.Down))
-        {
-            movement.Y = -1.0;
-        }
-        this.Owner.Transform.Translation += movement * this.Speed * event.Dt;
+      if(this.ActiveID == 3)
+      {
+        this.ActiveID = 0;
+      }
+      else
+      {
+        this.ActiveID += 1;
+      }
     }
     
-    function EnableInput(event : ZilchEvent)
+    if(this.ActiveID != this.InputID)
     {
-        this.Enabled = true;
+      return;
     }
     
-    function DisableInput(event : ZilchEvent)
+    var movement : Real3 = Real3();
+    if(Zero.Keyboard.KeyIsDown(Keys.Up))
     {
-        this.Enabled = false;
+      movement.Y = 1.0;
     }
+    if(Zero.Keyboard.KeyIsDown(Keys.Right))
+    {
+      movement.X = 1.0;
+    }
+    if(Zero.Keyboard.KeyIsDown(Keys.Left))
+    {
+      movement.X = -1.0;
+    }
+    if(Zero.Keyboard.KeyIsDown(Keys.Down))
+    {
+      movement.Y = -1.0;
+    }
+    this.Owner.Transform.Translation += movement * this.Speed * event.Dt;
+  }
+  
+  function EnableInput(event : ZilchEvent)
+  {
+    this.Enabled = true;
+  }
+  
+  function DisableInput(event : ZilchEvent)
+  {
+    this.Enabled = false;
+  }
 }

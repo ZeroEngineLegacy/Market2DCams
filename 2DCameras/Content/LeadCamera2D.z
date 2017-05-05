@@ -11,67 +11,67 @@
 
 class LeadCamera2D : ZilchComponent
 {
-    [Dependency]
-    var Transform : Transform;
-    
-    [Dependency]
-    var Camera : Camera;
-    
-    //The object to be tracked
-    [Property]
-    var TargetCogPath : CogPath = null;
-    
-    [Property]
-    var CameraLeadMagnitude : Real = 5.0;
-    
-    [Property]
-    var InterpolationSpeed : Real = 5.0;
-    
-    var TargetObj : Cog
+  [Dependency]
+  var Transform : Transform;
+  
+  [Dependency]
+  var Camera : Camera;
+  
+  //The object to be tracked
+  [Property]
+  var TargetCogPath : CogPath = null;
+  
+  [Property]
+  var CameraLeadMagnitude : Real = 5.0;
+  
+  [Property]
+  var InterpolationSpeed : Real = 5.0;
+  
+  var TargetObj : Cog
+  {
+    get { return this.TargetCogPath.Cog; }
+  }
+  
+  var TargetObjPos : Real3
+  {
+    get { return this.TargetObj.Transform.WorldTranslation; }
+  }
+  
+  var TargetMoveDir : Real3
+  {
+    get { return Math.Normalize(this.TargetObjPos - this.LastFrameTargetPos); }
+  }
+  
+  var LastFrameTargetPos : Real3;
+  
+  //The camera position in WorldSpace
+  var CamPos : Real3
+  {
+    get { return this.Transform.WorldTranslation; }
+    set { this.Transform.WorldTranslation = value; }
+  }
+  
+  var TargetCamPos : Real3
+  {
+    get
     {
-        get { return this.TargetCogPath.Cog; }
+      var targPos = this.TargetObjPos;
+      targPos += this.TargetMoveDir * this.CameraLeadMagnitude;
+      targPos.Z = this.CamPos.Z;
+      return targPos;
     }
-    
-    var TargetObjPos : Real3
-    {
-        get { return this.TargetObj.Transform.WorldTranslation; }
-    }
-    
-    var TargetMoveDir : Real3
-    {
-        get { return Math.Normalize(this.TargetObjPos - this.LastFrameTargetPos); }
-    }
-    
-    var LastFrameTargetPos : Real3;
-    
-    //The camera position in WorldSpace
-    var CamPos : Real3
-    {
-        get { return this.Transform.WorldTranslation; }
-        set { this.Transform.WorldTranslation = value; }
-    }
-    
-    var TargetCamPos : Real3
-    {
-        get
-        {
-            var targPos = this.TargetObjPos;
-            targPos += this.TargetMoveDir * this.CameraLeadMagnitude;
-            targPos.Z = this.CamPos.Z;
-            return targPos;
-        }
-    }
-    
-    function Initialize(init : CogInitializer)
-    {
-        this.LastFrameTargetPos = this.TargetObjPos;
-        Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
-    }
+  }
+  
+  function Initialize(init : CogInitializer)
+  {
+    this.LastFrameTargetPos = this.TargetObjPos;
+    Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
 
-    function OnLogicUpdate(event : UpdateEvent)
-    {
-        this.CamPos = Math.Lerp(this.CamPos, this.TargetCamPos, event.Dt * this.InterpolationSpeed);
-        
-        this.LastFrameTargetPos = this.TargetObjPos;
-    }
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    this.CamPos = Math.Lerp(this.CamPos, this.TargetCamPos, event.Dt * this.InterpolationSpeed);
+    
+    this.LastFrameTargetPos = this.TargetObjPos;
+  }
 }
