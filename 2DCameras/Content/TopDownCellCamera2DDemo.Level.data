@@ -10,14 +10,14 @@ Level
 			var Active = true
 			var HalfCellOffset = false
 			var CellSize = 1
-			var Axis = GridAxis.ZAxis
+			var Axis = AxisDirection.Z
 			var Lines = 100
 			var DrawAxisOrigins = true
 			var AlwaysDrawInEditor = true
 			var DrawInGame = true
-			var GridColor = Vec4{0.5, 0.5, 0.5, 0.400000006}
-			var GridHiLight = Vec4{0, 0, 0, 0.400000006}
-			var HilightInterval = 10
+			var GridColor = Real4{0.5, 0.5, 0.5, 0.400000006}
+			var GridHighlight = Real4{0, 0, 0, 0.400000006}
+			var HighlightInterval = 10
 			var FollowEditorCamera = false
 		}
 		UISpaceCreator 
@@ -32,9 +32,9 @@ Level
 		var LinkId = 2
 		Transform 
 		{
-			var Translation = Vec3{-7.34534407, 17.1829891, 46.3766174}
-			var Scale = Vec3{1, 1, 1}
-			var Rotation = Quat{-0.173969626, -0.0772553086, -0.0136917271, 0.98162055}
+			var Translation = Real3{-7.34534407, 17.1829891, 46.3766174}
+			var Scale = Real3{1, 1, 1}
+			var Rotation = Quaternion{-0.173969626, -0.0772553086, -0.0136917271, 0.98162055}
 		}
 		CameraViewport 
 		{
@@ -43,8 +43,8 @@ Level
 			var RenderToViewport = true
 			var ForwardViewportEvents = false
 			var RenderOrder = 0
-			var NormalizedSize = Vec2{1, 1}
-			var NormalizedOffset = Vec2{0, 0}
+			var NormalizedSize = Real2{1, 1}
+			var NormalizedOffset = Real2{0, 0}
 			var Camera = CogPath
 			{
 				var Path = "."
@@ -75,13 +75,12 @@ Level
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
 			}
-			var Resolution = Vec2{1920, 1080}
+			var Resolution = Real2{1920, 1080}
 			var ViewportScaling = ViewportScaling.Fill
-			var MarginColor = Vec4{0, 0, 0, 1}
+			var MarginColor = Real4{0, 0, 0, 1}
 		}
 		Camera 
 		{
-			var Facing = Facing.NegativeZ
 			var NearPlane = 0.5
 			var FarPlane = 500
 			var PerspectiveMode = PerspectiveMode.Perspective
@@ -90,7 +89,7 @@ Level
 		}
 		DefaultRenderer 
 		{
-			var ClearColor = Vec4{0.125, 0.125, 0.125, 1}
+			var ClearColor = Real4{0.125, 0.125, 0.125, 1}
 			var DrawDebug = true
 		}
 		EditorCameraController 
@@ -99,7 +98,7 @@ Level
 			var LookDistance = 50
 			var VerticalAngle = 0.350811273
 			var HorizontalAngle = 0.157079831
-			var LookTarget = Vec3{0, 0, 0}
+			var LookTarget = Real3{0, 0, 0}
 			var MoveSensitivity = 1
 		}
 	}
@@ -109,9 +108,9 @@ Level
 		var LinkId = 3
 		Transform 
 		{
-			var Translation = Vec3{0, 0, 50}
-			var Scale = Vec3{1, 1, 1}
-			var Rotation = Quat{0, 0, 0, 1}
+			var Translation = Real3{0, 0, 50}
+			var Scale = Real3{1, 1, 1}
+			var Rotation = Quaternion{0, 0, 0, 1}
 		}
 		CameraViewport 
 		{
@@ -120,8 +119,8 @@ Level
 			var RenderToViewport = true
 			var ForwardViewportEvents = false
 			var RenderOrder = 0
-			var NormalizedSize = Vec2{1, 1}
-			var NormalizedOffset = Vec2{0, 0}
+			var NormalizedSize = Real2{1, 1}
+			var NormalizedOffset = Real2{0, 0}
 			var Camera = CogPath
 			{
 				var Path = "."
@@ -152,13 +151,12 @@ Level
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
 			}
-			var Resolution = Vec2{1080, 1080}
+			var Resolution = Real2{1080, 1080}
 			var ViewportScaling = ViewportScaling.Letterbox
-			var MarginColor = Vec4{0.639999986, 0.639999986, 0.639999986, 1}
+			var MarginColor = Real4{0.639999986, 0.639999986, 0.639999986, 1}
 		}
 		Camera 
 		{
-			var Facing = Facing.NegativeZ
 			var NearPlane = 0.5
 			var FarPlane = 100
 			var PerspectiveMode = PerspectiveMode.Orthographic
@@ -167,7 +165,7 @@ Level
 		}
 		DefaultRenderer 
 		{
-			var ClearColor = Vec4{0.105000019, 0.105000019, 0.105000019, 1}
+			var ClearColor = Real4{0.105000019, 0.105000019, 0.105000019, 1}
 			var DrawDebug = true
 		}
 		SoundListener 
@@ -201,9 +199,9 @@ Level
 		var LinkId = 4
 		Transform 
 		{
-			var Translation = Vec3{0, 0, 0}
-			var Scale = Vec3{1, 1, 1}
-			var Rotation = Quat{0, 0, 0, 1}
+			var Translation = Real3{0, 0, 0}
+			var Scale = Real3{1, 1, 1}
+			var Rotation = Quaternion{0, 0, 0, 1}
 		}
 		Sprite 
 		{
@@ -211,7 +209,7 @@ Level
 			var ViewCulling = true
 			var VisibilityEvents = true
 			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
-			var VertexColor = Vec4{1, 1, 1, 1}
+			var VertexColor = Real4{1, 1, 1, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
 			var FlipX = false

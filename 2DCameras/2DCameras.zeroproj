@@ -2,19 +2,18 @@
 Cog 
 {
 	var Name = ""
-	Project 
+	ProjectSettings 
 	{
 		var ProjectName = "2DCameras"
 		var ProjectOwner = ""
 		var DefaultLevel = "Level"
 		var ProjectSpace = "Space"
-		var ProjectEngineRevision = 15136
+		var ProjectEngineRevision = 16582
 		var AutoTakeProjectScreenshot = true
 		var Guid = 0x58069bb18b93a33d
 	}
 	EditorSettings 
 	{
-		var EditorMode = EditorMode.Mode3D
 		var ViewCube = true
 		var ViewCubeSize = 0.150000006
 		var ScriptReloadEditor = ScriptReloadMethod.ReInitializeObjects
@@ -29,5 +28,9 @@ Cog
 		var MinorVersion = 0
 		var PatchVersion = 0
 		var RevisionId = 15136
+	}
+	ProjectConfig 
+	{
+		var EditorMode = EditorMode.Mode3D
 	}
 }
