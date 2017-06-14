@@ -6,6 +6,9 @@ class InputCycledMovement : ZilchComponent
   [Property]
   var Speed : Real = 5.0;
   
+  [Property]
+  var CycleEnabled : Boolean = false;
+  
   var ActiveID : Integer = 0;
   
   var Enabled : Boolean = true;
@@ -22,7 +25,7 @@ class InputCycledMovement : ZilchComponent
     if(!this.Enabled)
       return;
     
-    if(Zero.Keyboard.KeyIsPressed(Keys.Enter))
+    if(Zero.Keyboard.KeyIsPressed(Keys.Enter) && this.CycleEnabled)
     {
       if(this.ActiveID == 3)
       {

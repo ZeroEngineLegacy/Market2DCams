@@ -41,7 +41,7 @@ Level
 		}
 		UISpaceCreator 
 		{
-			var UILevel = "581b0646f09fe3e3:MovementInstructions"
+			var UILevel = "59174270a36aa60f:MultiFocusCamera2DInstructions"
 			var UISpace = "576f215c0825de61:Space"
 		}
 	}
@@ -51,9 +51,9 @@ Level
 		var LinkId = 2
 		Transform 
 		{
-			var Translation = Real3{-6.76699305, 40.7726746, 120.547394}
+			var Translation = Real3{-19.560421, 20.2759666, 122.276299}
 			var Scale = Real3{1, 1, 1}
-			var Rotation = Quaternion{-0.0871366337, 0.0208623447, 0.00182521821, 0.99597621}
+			var Rotation = Quaternion{-0.00348892272, -0.0314109512, -0.000109645196, 0.999500453}
 		}
 		Camera 
 		{
@@ -72,7 +72,7 @@ Level
 			var RenderOrder = 0
 			var NormalizedSize = Real2{1, 1}
 			var NormalizedOffset = Real2{0, 0}
-			var Camera = CogPath
+			var CameraPath = CogPath
 			{
 				var Path = "."
 				var ErrorOnResolveToNull = false
@@ -87,7 +87,7 @@ Level
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
 			}
-			var Renderer = CogPath
+			var RendererPath = CogPath
 			{
 				var Path = "."
 				var ErrorOnResolveToNull = false
@@ -114,9 +114,10 @@ Level
 		EditorCameraController 
 		{
 			var ControlMode = ControlMode.Orbit
+			var Previous3DMode = ControlMode.Orbit
 			var LookDistance = 122.980057
-			var VerticalAngle = 0.17453292
-			var HorizontalAngle = -0.0418871455
+			var VerticalAngle = 0.00698130485
+			var HorizontalAngle = 0.0628326088
 			var LookTarget = Real3{-11.8385334, 19.4174118, -0.45808506}
 			var MoveSensitivity = 1
 		}
@@ -148,7 +149,7 @@ Level
 			var RenderOrder = 0
 			var NormalizedSize = Real2{1, 1}
 			var NormalizedOffset = Real2{0, 0}
-			var Camera = CogPath
+			var CameraPath = CogPath
 			{
 				var Path = "."
 				var ErrorOnResolveToNull = false
@@ -163,7 +164,7 @@ Level
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
 			}
-			var Renderer = CogPath
+			var RendererPath = CogPath
 			{
 				var Path = "."
 				var ErrorOnResolveToNull = false
@@ -225,8 +226,12 @@ Level
 			var Visible = true
 			var ViewCulling = true
 			var VisibilityEvents = true
+			var OverrideBoundingBox = false
+			var LocalAabbCenter = Real3{0, 0, 0}
+			var LocalAabbHalfExtents = Real3{1, 1, 1}
+			var GroupSortValue = 0
 			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
-			var VertexColor = Real4{1, 1, 1, 1}
+			var VertexColor = Real4{1, 0, 0, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
 			var FlipX = false
@@ -239,6 +244,7 @@ Level
 		{
 			var InputID = 0
 			var Speed = 5
+			var CycleEnabled = true
 		}
 		MultiFocusCamera2DTarget 
 		{
@@ -261,8 +267,12 @@ Level
 			var Visible = true
 			var ViewCulling = true
 			var VisibilityEvents = true
+			var OverrideBoundingBox = false
+			var LocalAabbCenter = Real3{0, 0, 0}
+			var LocalAabbHalfExtents = Real3{1, 1, 1}
+			var GroupSortValue = 0
 			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
-			var VertexColor = Real4{1, 1, 1, 1}
+			var VertexColor = Real4{0, 0, 1, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
 			var FlipX = false
@@ -275,6 +285,7 @@ Level
 		{
 			var InputID = 2
 			var Speed = 5
+			var CycleEnabled = true
 		}
 		MultiFocusCamera2DTarget 
 		{
@@ -297,6 +308,10 @@ Level
 			var Visible = true
 			var ViewCulling = true
 			var VisibilityEvents = true
+			var OverrideBoundingBox = false
+			var LocalAabbCenter = Real3{0, 0, 0}
+			var LocalAabbHalfExtents = Real3{1, 1, 1}
+			var GroupSortValue = 0
 			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
 			var VertexColor = Real4{1, 1, 1, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
@@ -311,6 +326,7 @@ Level
 		{
 			var InputID = 3
 			var Speed = 5
+			var CycleEnabled = true
 		}
 		MultiFocusCamera2DTarget 
 		{
@@ -333,8 +349,12 @@ Level
 			var Visible = true
 			var ViewCulling = true
 			var VisibilityEvents = true
+			var OverrideBoundingBox = false
+			var LocalAabbCenter = Real3{0, 0, 0}
+			var LocalAabbHalfExtents = Real3{1, 1, 1}
+			var GroupSortValue = 0
 			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
-			var VertexColor = Real4{1, 1, 1, 1}
+			var VertexColor = Real4{0, 1, 0, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
 			var FlipX = false
@@ -347,6 +367,7 @@ Level
 		{
 			var InputID = 1
 			var Speed = 5
+			var CycleEnabled = true
 		}
 		MultiFocusCamera2DTarget 
 		{
