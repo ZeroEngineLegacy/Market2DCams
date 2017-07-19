@@ -114,7 +114,7 @@ Level
 	}
 	Cog 
 	{
-		var Name = "Camera"
+		var Name = "GameCamera"
 		var LinkId = 4
 		Transform 
 		{
@@ -176,6 +176,40 @@ Level
 		SoundListener 
 		{
 			var Active = true
+		}
+	}
+	Cog 
+	{
+		var Name = "Renderer"
+		var LinkId = 3
+		ForwardRenderer 
+		{
+			var EditorDebugDraw = true
+			var GameDebugDraw = true
+			var RenderDiffuse = true
+			var RenderSpecular = true
+			var RenderSkybox = false
+			var Skybox = "5822dec85e380cf1:SimpleSkybox"
+			var ClearColor = Real4{0, 0, 0, 0}
+			var DirectLighting = true
+			var IndirectLighting = true
+			var IndirectIntensity = 1
+			var ToneMap = true
+			var DirectionalLight = CogPath
+			{
+				var Path = ""
+				var ErrorOnResolveToNull = false
+				var ErrorOnPathCantCompute = false
+				var ErrorOnDirectLinkFail = false
+				var UpdateCogOnPathChange = true
+				var UpdatePathOnCogChange = true
+				var UpdateCogOnInitialize = true
+				var ResolvedNullErrorOccurred = false
+				var ResolvedCog = 4294967293
+				var PathPreference0 = CogPathPreference.CogRelative
+				var PathPreference1 = CogPathPreference.SpaceRelative
+				var PathPreference2 = CogPathPreference.Absolute
+			}
 		}
 	}
 	Cog 
@@ -248,16 +282,6 @@ Level
 					var TextAlign = TextAlign.Center
 				}
 			}
-		}
-	}
-	Cog 
-	{
-		var Name = "Renderer"
-		var LinkId = 3
-		UIRenderer 
-		{
-			var ClearColor = Real4{0, 0, 0, 0}
-			var DrawDebug = true
 		}
 	}
 }

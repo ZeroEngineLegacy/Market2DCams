@@ -30,7 +30,7 @@ class TopDownCellCamera2D : ZilchComponent
   
   //CogPath to the player object
   [Property]
-  var PlayerCogPath : CogPath;
+  var PlayerCogPath : CogPath = CogPath();
   
   //Should this component write debug output to the console
   [Property]
@@ -108,7 +108,7 @@ class TopDownCellCamera2D : ZilchComponent
     //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
     var leftEdge = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(Real2(0,0)), 0.0);
     var targCamPos = this.Transform.Translation - Real3(this.CellSize.X, 0.0, 0.0);
-    var targPlayerPos = Real3(leftEdge.X - this.PlayerHalfXScale - this.Epsilon, this.PlayerPos.Y, 0.0);
+    var targPlayerPos = Real3(leftEdge.X - this.PlayerHalfXScale - this.Epsilon, this.PlayerPos.Y, this.PlayerPos.Z);
     
     this.Shift(targCamPos, targPlayerPos);
   }
@@ -124,7 +124,7 @@ class TopDownCellCamera2D : ZilchComponent
     );
     
     var targCamPos = this.Transform.Translation + Real3(this.CellSize.X, 0.0, 0.0);
-    var targPlayerPos = Real3(rightEdge.X + this.PlayerHalfXScale + this.Epsilon, this.PlayerPos.Y, 0.0);
+    var targPlayerPos = Real3(rightEdge.X + this.PlayerHalfXScale + this.Epsilon, this.PlayerPos.Y, this.PlayerPos.Z);
     
     this.Shift(targCamPos, targPlayerPos);
   }
@@ -137,7 +137,7 @@ class TopDownCellCamera2D : ZilchComponent
     //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
     var topEdge = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(Real2(0,0)), 0.0);
     var targCamPos = this.Transform.Translation + Real3(0.0, this.CellSize.Y, 0.0);
-    var targPlayerPos = Real3(this.PlayerPos.X, topEdge.Y + this.PlayerHalfYScale + this.Epsilon, 0.0);
+    var targPlayerPos = Real3(this.PlayerPos.X, topEdge.Y + this.PlayerHalfYScale + this.Epsilon, this.PlayerPos.Z);
     
     this.Shift(targCamPos, targPlayerPos);
   }
@@ -153,7 +153,7 @@ class TopDownCellCamera2D : ZilchComponent
     );
     
     var targCamPos = this.Transform.Translation - Real3(0.0, this.CellSize.Y, 0.0);
-    var targPlayerPos = Real3(this.PlayerPos.X, botEdge.Y - this.PlayerHalfYScale - this.Epsilon, 0.0);
+    var targPlayerPos = Real3(this.PlayerPos.X, botEdge.Y - this.PlayerHalfYScale - this.Epsilon, this.PlayerPos.Z);
     
     this.Shift(targCamPos, targPlayerPos);
   }
