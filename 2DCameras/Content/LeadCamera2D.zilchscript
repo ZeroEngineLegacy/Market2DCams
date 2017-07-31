@@ -1,77 +1,62 @@
-/************************************************************************************************************/
-/* Copyright 2016 DigiPen, All Rights Reserved                                                              */
-/* Class: LeadCamera2D                                                                                      */
-/* Brief: This camera uses the last known target position, and the current position to create a direction   */
-/* vector that is used for leading the targets movements.                                                   */
-/*                                                                                                          */
-/* Author: Arend Danielek                                                                                   */
-/* Last Update: 12/23/2016                                                                                  */
-/* Last Updated By: Arend Danielek                                                                          */
-/************************************************************************************************************/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Copyright 2016 DigiPen USA Corporation, All Rights Reserved
+// Author: Arend Danielek
+// Last updated by: Joshua Davis
+// Last update: 7/24/2017
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// This camera uses the last known target position, and the current position
+// to create a direction vector that is used for leading the targets movements.
 class LeadCamera2D : ZilchComponent
 {
-  [Dependency]
-  var Transform : Transform;
+  [Dependency] var Transform : Transform;
   
-  [Dependency]
-  var Camera : Camera;
+  [Dependency] var Camera : Camera;
   
-  //The object to be tracked
-  [Property]
-  var TargetCogPath : CogPath = null;
+  // The object to be tracked
+  [Property] var TargetCogPath : CogPath = CogPath();
   
-  [Property]
-  var CameraLeadMagnitude : Real = 5.0;
+  // How far the camera should lead the target object
+  [Property] var CameraLeadMagnitude : Real = 5.0;
   
-  [Property]
-  var InterpolationSpeed : Real = 5.0;
+  // How quickly to interpolate to the target position
+  [Property] var InterpolationSpeed : Real = 5.0;
   
-  var TargetObj : Cog
-  {
-    get { return this.TargetCogPath.Cog; }
-  }
-  
-  var TargetObjPos : Real3
-  {
-    get { return this.TargetObj.Transform.WorldTranslation; }
-  }
-  
-  var TargetMoveDir : Real3
-  {
-    get { return Math.Normalize(this.TargetObjPos - this.LastFrameTargetPos); }
-  }
-  
-  var LastFrameTargetPos : Real3;
-  
-  //The camera position in WorldSpace
-  var CamPos : Real3
-  {
-    get { return this.Transform.WorldTranslation; }
-    set { this.Transform.WorldTranslation = value; }
-  }
-  
-  var TargetCamPos : Real3
-  {
-    get
-    {
-      var targPos = this.TargetObjPos;
-      targPos += this.TargetMoveDir * this.CameraLeadMagnitude;
-      targPos.Z = this.CamPos.Z;
-      return targPos;
-    }
-  }
-  
+  // Cached position of the target object last frame
+  var LastFrameTargetPosition : Real3;
+
   function Initialize(init : CogInitializer)
   {
-    this.LastFrameTargetPos = this.TargetObjPos;
+    // Confirm the target exists
+    var targetCog = this.TargetCogPath.Cog;
+    if(targetCog == null)
+      throw new Exception("Camera has no target.");
+    
     Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
   }
-
+  
   function OnLogicUpdate(event : UpdateEvent)
   {
-    this.CamPos = Math.Lerp(this.CamPos, this.TargetCamPos, event.Dt * this.InterpolationSpeed);
+    var targetCog = this.TargetCogPath.Cog;
+    if(targetCog == null)
+      return;
+      
+    // Get the target object's position and the camera's position
+    var targetObjPos = targetCog.Transform.WorldTranslation;
+    var cameraPos = this.Transform.WorldTranslation;
     
-    this.LastFrameTargetPos = this.TargetObjPos;
+    // Compute the normalized direction to offset the camera's position by
+    var offsetDir = Math.Normalize(targetObjPos - this.LastFrameTargetPosition);
+    // Compute the target position of the caemra from the object's current position and the offset direction
+    var targetPosition = targetObjPos + offsetDir * this.CameraLeadMagnitude;
+    // Keep the camera on the same z-plane
+    targetPosition.Z = cameraPos.Z;
+    
+    // Smoothly interpolate from the camera's current position to the target position
+    cameraPos = Math.Lerp(cameraPos, targetPosition, event.Dt * this.InterpolationSpeed);
+    this.Transform.WorldTranslation = cameraPos;
+    
+    // Cache the target object's position
+    this.LastFrameTargetPosition = targetObjPos;
   }
 }

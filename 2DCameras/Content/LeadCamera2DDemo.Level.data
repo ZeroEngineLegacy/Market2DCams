@@ -39,10 +39,11 @@ Level
 			var HighlightInterval = 10
 			var FollowEditorCamera = false
 		}
-		UISpaceCreator 
+		SpaceCreator 
 		{
-			var UILevel = "581b0646f09fe3e3:MovementInstructions"
-			var UISpace = "576f215c0825de61:Space"
+			var SpaceArchetype = "4e39ae0ad564493d:DefaultSpace"
+			var NewSpaceName = "UiSpace"
+			var LevelToLoad = "581b0646f09fe3e3:MovementInstructions"
 		}
 	}
 	Cog 
@@ -256,7 +257,7 @@ Level
 			var LocalAabbCenter = Real3{0, 0, 0}
 			var LocalAabbHalfExtents = Real3{1, 1, 1}
 			var GroupSortValue = 0
-			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
+			var Material = "582c575af53d18c9:AlphaSprite"
 			var VertexColor = Real4{1, 1, 1, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
@@ -266,11 +267,10 @@ Level
 			var AnimationSpeed = 1
 			var StartFrame = 0
 		}
-		InputCycledMovement 
+		SimpleMovement 
 		{
-			var InputID = 0
+			var Active = true
 			var Speed = 5
-			var CycleEnabled = false
 		}
 	}
 }

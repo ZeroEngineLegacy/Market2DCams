@@ -1,10 +1,9 @@
 [Version:1]
 Level 
 {
-	Cog 
+	Cog [ContextId:1]
 	{
 		var Name = "LevelSettings"
-		var LinkId = 1
 		GravityEffect 
 		{
 			var Active = true
@@ -39,21 +38,21 @@ Level
 			var HighlightInterval = 10
 			var FollowEditorCamera = false
 		}
-		UISpaceCreator 
+		SpaceCreator 
 		{
-			var UILevel = "59174270a36aa60f:MultiFocusCamera2DInstructions"
-			var UISpace = "576f215c0825de61:Space"
+			var SpaceArchetype = "4e39ae0ad564493d:DefaultSpace"
+			var NewSpaceName = "UiSpace"
+			var LevelToLoad = "59174270a36aa60f:MultiFocusCamera2DInstructions"
 		}
 	}
-	Cog 
+	Cog [ContextId:2]
 	{
 		var Name = "EditorCamera"
-		var LinkId = 2
 		Transform 
 		{
-			var Translation = Real3{-19.560421, 20.2759666, 122.276299}
+			var Translation = Real3{-0.11124897, -8.69092846, 75.2168121}
 			var Scale = Real3{1, 1, 1}
-			var Rotation = Quaternion{-0.00348892272, -0.0314109512, -0.000109645196, 0.999500453}
+			var Rotation = Quaternion{-0.00348892296, -0.0314109549, -0.000109645203, 0.999500513}
 		}
 		Camera 
 		{
@@ -67,11 +66,7 @@ Level
 		{
 			var RenderInEditor = true
 			var RenderInGame = false
-			var RenderToViewport = true
-			var ForwardViewportEvents = false
 			var RenderOrder = 0
-			var NormalizedSize = Real2{1, 1}
-			var NormalizedOffset = Real2{0, 0}
 			var CameraPath = CogPath
 			{
 				var Path = "."
@@ -82,7 +77,7 @@ Level
 				var UpdatePathOnCogChange = true
 				var UpdateCogOnInitialize = true
 				var ResolvedNullErrorOccurred = false
-				var ResolvedCog = 2
+				var Cog = 2
 				var PathPreference0 = CogPathPreference.CogRelative
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
@@ -97,30 +92,33 @@ Level
 				var UpdatePathOnCogChange = true
 				var UpdateCogOnInitialize = true
 				var ResolvedNullErrorOccurred = false
-				var ResolvedCog = 3
+				var Cog = 3
 				var PathPreference0 = CogPathPreference.CogRelative
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
 			}
-			var Resolution = Real2{1280, 720}
+			var ResolutionOrAspect = Integer2{1920, 1080}
+			var RenderToViewport = true
+			var ForwardViewportEvents = false
 			var ViewportScaling = ViewportScaling.Fill
 			var MarginColor = Real4{0, 0, 0, 1}
+			var NormalizedSize = Real2{1, 1}
+			var NormalizedOffset = Real2{0, 0}
 		}
 		EditorCameraController 
 		{
 			var ControlMode = ControlMode.Orbit
 			var Previous3DMode = ControlMode.Orbit
-			var LookDistance = 122.980057
+			var LookDistance = 74.5911407
 			var VerticalAngle = 0.00698130485
 			var HorizontalAngle = 0.0628326088
-			var LookTarget = Real3{-11.8385334, 19.4174118, -0.45808506}
+			var LookTarget = Real3{4.57230997, -9.21166801, 0.774677515}
 			var MoveSensitivity = 1
 		}
 	}
-	Cog 
+	Cog [ContextId:4]
 	{
 		var Name = "GameCamera"
-		var LinkId = 4
 		Transform 
 		{
 			var Translation = Real3{0, 0, 50}
@@ -139,11 +137,7 @@ Level
 		{
 			var RenderInEditor = false
 			var RenderInGame = true
-			var RenderToViewport = true
-			var ForwardViewportEvents = false
 			var RenderOrder = 0
-			var NormalizedSize = Real2{1, 1}
-			var NormalizedOffset = Real2{0, 0}
 			var CameraPath = CogPath
 			{
 				var Path = "."
@@ -154,7 +148,7 @@ Level
 				var UpdatePathOnCogChange = true
 				var UpdateCogOnInitialize = true
 				var ResolvedNullErrorOccurred = false
-				var ResolvedCog = 4
+				var Cog = 4
 				var PathPreference0 = CogPathPreference.CogRelative
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
@@ -169,14 +163,18 @@ Level
 				var UpdatePathOnCogChange = true
 				var UpdateCogOnInitialize = true
 				var ResolvedNullErrorOccurred = false
-				var ResolvedCog = 3
+				var Cog = 3
 				var PathPreference0 = CogPathPreference.CogRelative
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
 			}
-			var Resolution = Real2{1280, 720}
+			var ResolutionOrAspect = Integer2{1920, 1080}
+			var RenderToViewport = true
+			var ForwardViewportEvents = false
 			var ViewportScaling = ViewportScaling.Fill
 			var MarginColor = Real4{0, 0, 0, 1}
+			var NormalizedSize = Real2{1, 1}
+			var NormalizedOffset = Real2{0, 0}
 		}
 		Orientation 
 		{
@@ -187,24 +185,19 @@ Level
 		MultiFocusCamera2D 
 		{
 			var Active = true
-			var TrackingSpeed = 5
-			var ExtremaBasedTracking = true
-			var WeightedTracking = true
-			var FocusSpeed = 10
-			var ExtremaBaseFocusing = true
 			var WeightedFocusing = true
+			var TrackingSpeed = 5
+			var FocusSpeed = 10
 			var MinZoom = 1
 			var MaxZoom = 100
-			var ScreenPadding = Real2{0, 0}
-			var MaxObjectCount = 10
+			var ScreenPadding = Real2{1, 1}
 			var DebugPrint = true
 			var BreakOnError = true
 		}
 	}
-	Cog 
+	Cog [ContextId:3]
 	{
 		var Name = "Renderer"
-		var LinkId = 3
 		ForwardRenderer 
 		{
 			var EditorDebugDraw = true
@@ -228,17 +221,16 @@ Level
 				var UpdatePathOnCogChange = true
 				var UpdateCogOnInitialize = true
 				var ResolvedNullErrorOccurred = false
-				var ResolvedCog = 4294967293
+				var Cog = 4294967293
 				var PathPreference0 = CogPathPreference.CogRelative
 				var PathPreference1 = CogPathPreference.SpaceRelative
 				var PathPreference2 = CogPathPreference.Absolute
 			}
 		}
 	}
-	Cog 
+	Cog [ContextId:5]
 	{
 		var Name = "Top"
-		var LinkId = 5
 		Transform 
 		{
 			var Translation = Real3{0, 17.8230762, 0}
@@ -254,7 +246,7 @@ Level
 			var LocalAabbCenter = Real3{0, 0, 0}
 			var LocalAabbHalfExtents = Real3{1, 1, 1}
 			var GroupSortValue = 0
-			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
+			var Material = "582c575af53d18c9:AlphaSprite"
 			var VertexColor = Real4{1, 0, 0, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
@@ -264,22 +256,30 @@ Level
 			var AnimationSpeed = 1
 			var StartFrame = 0
 		}
-		InputCycledMovement 
+		Reactive 
 		{
-			var InputID = 0
-			var Speed = 5
-			var CycleEnabled = true
+			var Active = true
 		}
 		MultiFocusCamera2DTarget 
 		{
+			var Active = true
 			var FocusWeight = 1
 			var AddOnEnterView = false
 		}
+		SimpleMovement 
+		{
+			var Active = true
+			var Speed = 5
+		}
+		SimpleInputControl 
+		{
+			var Active = true
+			var StartActive = true
+		}
 	}
-	Cog 
+	Cog [ContextId:6]
 	{
 		var Name = "Bot"
-		var LinkId = 6
 		Transform 
 		{
 			var Translation = Real3{0, -15.8519497, 0}
@@ -295,7 +295,7 @@ Level
 			var LocalAabbCenter = Real3{0, 0, 0}
 			var LocalAabbHalfExtents = Real3{1, 1, 1}
 			var GroupSortValue = 0
-			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
+			var Material = "582c575af53d18c9:AlphaSprite"
 			var VertexColor = Real4{0, 0, 1, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
@@ -305,22 +305,30 @@ Level
 			var AnimationSpeed = 1
 			var StartFrame = 0
 		}
-		InputCycledMovement 
+		Reactive 
 		{
-			var InputID = 2
-			var Speed = 5
-			var CycleEnabled = true
+			var Active = true
 		}
 		MultiFocusCamera2DTarget 
 		{
+			var Active = true
 			var FocusWeight = 1
 			var AddOnEnterView = false
 		}
+		SimpleMovement 
+		{
+			var Active = true
+			var Speed = 5
+		}
+		SimpleInputControl 
+		{
+			var Active = true
+			var StartActive = false
+		}
 	}
-	Cog 
+	Cog [ContextId:7]
 	{
 		var Name = "Left"
-		var LinkId = 7
 		Transform 
 		{
 			var Translation = Real3{-34.8046951, 0.17865181, 0}
@@ -336,7 +344,7 @@ Level
 			var LocalAabbCenter = Real3{0, 0, 0}
 			var LocalAabbHalfExtents = Real3{1, 1, 1}
 			var GroupSortValue = 0
-			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
+			var Material = "582c575af53d18c9:AlphaSprite"
 			var VertexColor = Real4{1, 1, 1, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
@@ -346,22 +354,30 @@ Level
 			var AnimationSpeed = 1
 			var StartFrame = 0
 		}
-		InputCycledMovement 
+		Reactive 
 		{
-			var InputID = 3
-			var Speed = 5
-			var CycleEnabled = true
+			var Active = true
 		}
 		MultiFocusCamera2DTarget 
 		{
+			var Active = true
 			var FocusWeight = 1
 			var AddOnEnterView = false
 		}
+		SimpleMovement 
+		{
+			var Active = true
+			var Speed = 5
+		}
+		SimpleInputControl 
+		{
+			var Active = true
+			var StartActive = false
+		}
 	}
-	Cog 
+	Cog [ContextId:8]
 	{
 		var Name = "Right"
-		var LinkId = 8
 		Transform 
 		{
 			var Translation = Real3{31.254303, -0.0365328789, 0}
@@ -377,7 +393,7 @@ Level
 			var LocalAabbCenter = Real3{0, 0, 0}
 			var LocalAabbHalfExtents = Real3{1, 1, 1}
 			var GroupSortValue = 0
-			var Material = "56dcc7b15f51207d:DefaultSpriteMaterial"
+			var Material = "582c575af53d18c9:AlphaSprite"
 			var VertexColor = Real4{0, 1, 0, 1}
 			var GeometryMode = SpriteGeometryMode.ZPlane
 			var SpriteSource = "5275aa4d802dd6dc:Square"
@@ -387,16 +403,25 @@ Level
 			var AnimationSpeed = 1
 			var StartFrame = 0
 		}
-		InputCycledMovement 
+		Reactive 
 		{
-			var InputID = 1
-			var Speed = 5
-			var CycleEnabled = true
+			var Active = true
 		}
 		MultiFocusCamera2DTarget 
 		{
+			var Active = true
 			var FocusWeight = 1
 			var AddOnEnterView = false
+		}
+		SimpleMovement 
+		{
+			var Active = true
+			var Speed = 5
+		}
+		SimpleInputControl 
+		{
+			var Active = true
+			var StartActive = false
 		}
 	}
 }

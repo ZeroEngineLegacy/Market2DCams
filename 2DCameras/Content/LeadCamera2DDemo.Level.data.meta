@@ -3,7 +3,7 @@ DataContent
 {
 	DataBuilder 
 	{
-		var Name = "LeadCam2DDemo"
+		var Name = "LeadCamera2DDemo"
 		var ResourceId = 0x580b596c3937a896
 		var LoaderType = "Level"
 		var Version = 0

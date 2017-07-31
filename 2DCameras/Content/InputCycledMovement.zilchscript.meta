@@ -1,9 +1,0 @@
-[Version:1]
-TextContent 
-{
-	ZilchScriptBuilder 
-	{
-		var Name = "InputCycledMovement"
-		var ResourceId = 0x581b1d6fdf389ce2
-	}
-}

@@ -1,66 +1,30 @@
-/************************************************************************************************************/
-/* Copyright 2016 DigiPen, All Rights Reserved                                                              */
-/* Class: TopDownCellCamera                                                                                 */
-/* Brief: Implements a 2D camera which splits the environment into "cells" that are the size of the camera  */
-/* frustrum projection on the 0 Z-Plane. When the player sprite (assumed to be square) reaches the edge of  */
-/* viewport, the camera object will interpolate over the crossed edge centering on the next "cell".         */
-/*                                                                                                          */
-/* Author: Arend Danielek                                                                                   */
-/* Last Update: 12/23/2016                                                                                  */
-/* Last Updated By: Arend Danielek                                                                          */
-/************************************************************************************************************/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Copyright 2016 DigiPen USA Corporation, All Rights Reserved
+// Author: Arend Danielek
+// Last updated by: Joshua Davis
+// Last update: 7/31/2017
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Implements a 2D camera which splits the environment into "cells" that are the size of the camera
+// frustrum projection on the 0 Z-Plane. When the player sprite (assumed to be square) reaches the edge of
+// viewport, the camera object will interpolate over the crossed edge centering on the next "cell".
 class TopDownCellCamera2D : ZilchComponent
 {
   sends EnablePlayerInput : ZilchEvent;
   sends DisablePlayerInput : ZilchEvent;
   
-  [Dependency]
-  var Transform : Transform;
+  [Dependency] var Transform : Transform;
+  [Dependency] var Camera : Camera;
+  [Dependency] var CameraViewport : CameraViewport;
   
-  [Dependency]
-  var Camera : Camera;
+  // Time for to shift (interpolate) the camera from one cell to the next
+  [Property] var ShiftDuration : Real = 1.0;
+  // CogPath to the player object
+  [Property] var PlayerCogPath : CogPath = CogPath();
+  // Should this component write debug output to the console?
+  [Property] var PrintDebug : Boolean = true;
   
-  [Dependency]
-  var CameraViewport : CameraViewport;
-  
-  //Duration to shift the camera from one cell to the next
-  [Property]
-  var ShiftDuration : Real = 1.0;
-  
-  //CogPath to the player object
-  [Property]
-  var PlayerCogPath : CogPath = CogPath();
-  
-  //Should this component write debug output to the console
-  [Property]
-  var PrintDebug : Boolean = true;
-  
-  //WorldSpace size of the viewport, used to determine when the player crosses the edge of the screen.
-  var CellSize : Real2
-  {
-    get
-    {
-      var tLeft = this.CameraViewport.ScreenToWorldZPlane(
-        this.CameraViewport.ViewportToScreen(Real2(0,0)), 0
-      );
-      var bRight = this.CameraViewport.ScreenToWorldZPlane(
-        this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0
-      );
-      
-      return Real2(bRight.X - tLeft.X, tLeft.Y - bRight.Y);
-    }
-  }
-  
-  var Player : Cog { get { return this.PlayerCogPath.Cog; } }
-  
-  //Helpers for player transform properties
-  var PlayerPos : Real3 { get { return this.Player.Transform.Translation; } }
-  var PlayerScale : Real3 { get { return this.Player.Transform.Scale; } }
-  var PlayerHalfXScale : Real { get { return this.PlayerScale.X / 2.0; } }
-  var PlayerHalfYScale : Real { get { return this.PlayerScale.Y / 2.0; } }
-  
-  //Epsilon used to prevent state flip-flopping
+  // An epsilon used to ensure the player is within the viewport after animating
   var Epsilon : Real = 0.01;
   
   function Initialize(init : CogInitializer)
@@ -70,116 +34,110 @@ class TopDownCellCamera2D : ZilchComponent
   
   function OnLogicUpdate(event : UpdateEvent)
   {
-    //Calculate the edge positions of the player sprite in WorldSpace
-    var leftPos = this.PlayerPos - Real3(this.PlayerHalfXScale, 0.0, 0.0);
-    var rightPos = this.PlayerPos + Real3(this.PlayerHalfXScale, 0.0, 0.0);
-    var botPos = this.PlayerPos - Real3(0.0, this.PlayerHalfYScale, 0.0);
-    var topPos = this.PlayerPos + Real3(0.0, this.PlayerHalfYScale, 0.0);
+    var playerCog = this.PlayerCogPath.Cog;
+    // Calculate the aabb of the player in world-space
+    var playerTransform = playerCog.Transform;
+    var playerPos = playerTransform.WorldTranslation;
+    var playerHalfExtents = playerTransform.WorldScale / 2.0;
     
-    //Convert the player sprite WorldSpace edge positions to ScreenSpace
+    // Compute the world'space edges of the player
+    var leftPos = playerPos - Real3(playerHalfExtents.X, 0.0, 0.0);
+    var rightPos = playerPos + Real3(playerHalfExtents.X, 0.0, 0.0);
+    var botPos = playerPos - Real3(0.0, playerHalfExtents.Y, 0.0);
+    var topPos = playerPos + Real3(0.0, playerHalfExtents.Y, 0.0);
+    
+    // Convert the player's world-space edge positions to screen-space
     var leftScreenPos = this.CameraViewport.WorldToScreen(leftPos);
     var rightScreenPos = this.CameraViewport.WorldToScreen(rightPos);
     var botScreenPos = this.CameraViewport.WorldToScreen(botPos);
     var topScreenPos = this.CameraViewport.WorldToScreen(topPos);
     
-    //Convert the player sprite ScreenSpace edge positions to ViewportSpace
+    // Convert from screen-space to view-space
     var leftViewPos = this.CameraViewport.ScreenToViewport(leftScreenPos);
     var rightViewPos = this.CameraViewport.ScreenToViewport(rightScreenPos);
     var botViewPos = this.CameraViewport.ScreenToViewport(botScreenPos);
     var topViewPos = this.CameraViewport.ScreenToViewport(topScreenPos);
     
-    //Check the edge positions against the viewport resolutions to see 
-    //if the player sprite has reached any of the viewport edges
+    // Check the edge positions against the viewport resolutions to see 
+    // if the player has reached any of the viewport edges
+    var viewportResolution = this.CameraViewport.ViewportResolution;
     if(leftViewPos.X <= 0.0)
-      this.ShiftLeft();
-    else if(rightViewPos.X >= this.CameraViewport.ViewportResolution.X)
-      this.ShiftRight();
-    else if(botViewPos.Y >= this.CameraViewport.ViewportResolution.Y)
-      this.ShiftDown();
+      this.Shift(-Real2.XAxis, playerPos, playerHalfExtents);
+    else if(rightViewPos.X >= viewportResolution.X)
+      this.Shift(Real2.XAxis, playerPos, playerHalfExtents);
+    else if(botViewPos.Y >= viewportResolution.Y)
+      this.Shift(-Real2.YAxis, playerPos, playerHalfExtents);
     else if(topViewPos.Y <= 0.0)
-      this.ShiftUp();
+      this.Shift(Real2.YAxis, playerPos, playerHalfExtents);
   }
   
-  function ShiftLeft()
+  // Compute the viewport's size in world-space
+  function GetViewportWorldSize() : Real2
+  {
+    var viewportMin = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(Real2(0)), 0);
+    var viewportMax = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0);
+    return Math.Abs(viewportMax.XY - viewportMin.XY);
+  }
+  
+  // Shift the camera in the given direction (assumed to be a normalized cardinal direction).
+  // Fixes the player's position afterwards to be just within the viewport.
+  function Shift(direction : Real2, playerPos : Real3, playerHalfExtents : Real3)
   {
     if(this.PrintDebug)
-      Console.WriteLine("ShiftLeft");
+      Console.WriteLine("Shift:", direction);
+      
+    // Get the full offset value based upon the direction to move and the viewport's size
+    var viewportSize = this.GetViewportWorldSize();
+    var offset = Real3(direction * viewportSize, 0);
+    // The half-offset is needed for positioning the player
+    var halfOffset = offset / 2.0;
     
-    //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
-    var leftEdge = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(Real2(0,0)), 0.0);
-    var targCamPos = this.Transform.Translation - Real3(this.CellSize.X, 0.0, 0.0);
-    var targPlayerPos = Real3(leftEdge.X - this.PlayerHalfXScale - this.Epsilon, this.PlayerPos.Y, this.PlayerPos.Z);
+    // The target camera position is simply updated by the offset direction
+    var targetCameraPos = this.Transform.WorldTranslation + offset;
     
-    this.Shift(targCamPos, targPlayerPos);
+    // Compute the aabb of the camera so that we can clamp the player's position to it
+    // effectively putting the player right on the edge of the viewport
+    var cameraAabb = Aabb();
+    cameraAabb.Set(targetCameraPos, Real3(viewportSize / 2.0, 0));
+    var clampedPlayerPos = Math.Clamp(playerPos, cameraAabb.Min, cameraAabb.Max);
+    // Reset the player to the same z-plane
+    clampedPlayerPos.Z = playerPos.Z;
+    
+    // Compute how much to offset the player from the edge of the screen based upon their size and an epsilon factor
+    var dir3D = Real3(direction, 0);
+    var playerSizeOffset = dir3D * playerHalfExtents + dir3D * this.Epsilon;
+    // Shift the player away from the screens edge so they're fully contained
+    var targetPlayerPos = clampedPlayerPos + playerSizeOffset;
+    
+    // Animate the camera and player position
+    this.AnimateCameraAndPlayer(targetCameraPos, targetPlayerPos);
   }
   
-  function ShiftRight()
-  {
-    if(this.PrintDebug)
-      Console.WriteLine("ShiftRight");
-    
-    //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
-    var rightEdge = this.CameraViewport.ScreenToWorldZPlane(
-      this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0.0
-    );
-    
-    var targCamPos = this.Transform.Translation + Real3(this.CellSize.X, 0.0, 0.0);
-    var targPlayerPos = Real3(rightEdge.X + this.PlayerHalfXScale + this.Epsilon, this.PlayerPos.Y, this.PlayerPos.Z);
-    
-    this.Shift(targCamPos, targPlayerPos);
-  }
-  
-  function ShiftUp()
-  {
-    if(this.PrintDebug)
-      Console.WriteLine("ShiftUp");
-    
-    //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
-    var topEdge = this.CameraViewport.ScreenToWorldZPlane(this.CameraViewport.ViewportToScreen(Real2(0,0)), 0.0);
-    var targCamPos = this.Transform.Translation + Real3(0.0, this.CellSize.Y, 0.0);
-    var targPlayerPos = Real3(this.PlayerPos.X, topEdge.Y + this.PlayerHalfYScale + this.Epsilon, this.PlayerPos.Z);
-    
-    this.Shift(targCamPos, targPlayerPos);
-  }
-  
-  function ShiftDown()
-  {
-    if(this.PrintDebug)
-      Console.WriteLine("ShiftDown");
-    
-    //Calculate the left edge of the viewport in WorldSpace and the target position for the Camera and Player
-    var botEdge = this.CameraViewport.ScreenToWorldZPlane(
-      this.CameraViewport.ViewportToScreen(this.CameraViewport.ViewportResolution), 0.0
-    );
-    
-    var targCamPos = this.Transform.Translation - Real3(0.0, this.CellSize.Y, 0.0);
-    var targPlayerPos = Real3(this.PlayerPos.X, botEdge.Y - this.PlayerHalfYScale - this.Epsilon, this.PlayerPos.Z);
-    
-    this.Shift(targCamPos, targPlayerPos);
-  }
-  
-  //Shifts the Camera and Player to the given positions
-  function Shift(targCamPos : Real3, targPlayerPos : Real3)
+  // Animates the Camera and Player to their target positions
+  function AnimateCameraAndPlayer(targetCameraPosition : Real3, targetPlayerPosition : Real3)
   {
     this.DisablePlayerInput();
     
+    var playerCog = this.PlayerCogPath.Cog;
     var seq = Actions.Sequence(this.Owner.Actions);
-    //Move the player and camera in sync
+    // Move the player and camera in sync
     var grp = Actions.Group(seq);
-    Actions.Property(grp, @this.Transform.Translation, targCamPos, this.ShiftDuration, Ease.Linear);
-    Actions.Property(grp, @this.Player.Transform.Translation, targPlayerPos, this.ShiftDuration, Ease.Linear);
+    Actions.Property(grp, @this.Transform.Translation, targetCameraPosition, this.ShiftDuration, Ease.Linear);
+    Actions.Property(grp, @playerCog.Transform.Translation, targetPlayerPosition, this.ShiftDuration, Ease.Linear);
       
-    //After moving the camera and player re-enable player input.
+    // After moving the camera and player re-enable player input.
     Actions.Call(seq, this.EnablePlayerInput);
   }
   
   function EnablePlayerInput()
   {
-    this.Player.DispatchEvent(Events.EnablePlayerInput, ZilchEvent());
+    var playerCog = this.PlayerCogPath.Cog;
+    playerCog.DispatchEvent(Events.EnablePlayerInput, ZilchEvent());
   }
   
   function DisablePlayerInput()
   {
-    this.Player.DispatchEvent(Events.DisablePlayerInput, ZilchEvent());
+    var playerCog = this.PlayerCogPath.Cog;
+    playerCog.DispatchEvent(Events.DisablePlayerInput, ZilchEvent());
   }
 }
