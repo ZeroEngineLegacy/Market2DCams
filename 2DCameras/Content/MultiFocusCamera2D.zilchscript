@@ -53,7 +53,8 @@ class MultiFocusCamera2D : ZilchComponent
   function Initialize(init : CogInitializer)
   {
     // Compute the initial focus position from the camera's position
-    this.FocusPos = this.Owner.Transform.WorldTranslation;
+    this.FocusPos = this.Transform.WorldTranslation;
+    this.Camera.PerspectiveMode = PerspectiveMode.Orthographic;
     
     Zero.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
     Zero.Connect(this.Space, Events.AddToCameraFocus, this.OnAddToCameraFocus);
@@ -87,11 +88,8 @@ class MultiFocusCamera2D : ZilchComponent
     // Correct the focus size to match the aspect ratio
     focusSize = this.FixSizeToAspectRatio(focusSize);
     
-    // Update the camera position/size depending on the perspective mode
-    if(this.Camera.PerspectiveMode == PerspectiveMode.Orthographic)
-      this.FocusOrthographic(focusSize, focusPos, event.Dt);
-    else
-      this.FocusPerspective(focusSize, focusPos, event.Dt);
+    // Update the camera position/size
+    this.FocusOrthographic(focusSize, focusPos, event.Dt);
   }
   
   function GetAabb(cog : Cog) : Aabb
@@ -147,21 +145,6 @@ class MultiFocusCamera2D : ZilchComponent
     var newPos = Math.Lerp(pos, focusPoint, this.TrackingSpeed * dt);
     newPos.Z = pos.Z;
     transform.WorldTranslation = newPos;
-  }
-  
-  function FocusPerspective(focusSize : Real2, focusPoint : Real3, dt : Real)
-  {
-    // Calculate the distance from the viewplane the camera should be positioned
-    var zDistance = Math.Sqrt(focusSize.X * focusSize.Y);
-    
-    // Constrain the z-depth to the min and max zoom levels
-    zDistance = Math.Clamp(zDistance, this.MinZoom, this.MaxZoom);
-    
-    var targetCameraPos = focusPoint - this.Orientation.WorldForward * zDistance;
-    
-    var pos = this.Transform.WorldTranslation;
-    var newPos = Math.Lerp(pos, targetCameraPos, this.TrackingSpeed * dt);
-    this.Transform.WorldTranslation = newPos;
   }
   
   // Handles event request to add an object to the focus list

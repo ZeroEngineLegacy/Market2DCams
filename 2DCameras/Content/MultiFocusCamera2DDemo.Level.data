@@ -185,7 +185,7 @@ Level
 		MultiFocusCamera2D 
 		{
 			var Active = true
-			var WeightedFocusing = true
+			var WeightedFocusing = false
 			var TrackingSpeed = 5
 			var FocusSpeed = 10
 			var MinZoom = 1
